@@ -1,0 +1,1540 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>hwp 말고, hwpx요.</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&family=Noto+Serif+KR:wght@600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* 흰 바탕의 모션그래픽 필름 톤: 네 모서리 모노 라벨 + 십자 표시, 아래 진행선, 남색 굵은 제목, 인디고 강조, 파스텔 칩 */
+:root{
+  --bg:#fbfbfd;--surface:#ffffff;--surface2:#f4f5fa;--line:#e4e7ef;
+  --ink:#08233f;--ink2:#4a5872;--ink3:#8b93a7;
+  --acc:#625afe;--acc-soft:#ecebff;
+  --lav:#dbd6ff;--mint:#cceede;--pink:#ffd6e4;--sky:#cee2fe;--peach:#ffdcc8;
+  --g1:#625afe;--g2:#625afe;--g3:#625afe;
+  --ok:#14885a;--no:#e0325f;--warn:#a86a0c;
+  --font:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --mono:"IBM Plex Mono","Noto Sans KR",ui-monospace,monospace;
+  --serif:"Noto Serif KR","Batang",serif;
+  color-scheme:light;
+}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);overflow:hidden;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--acc);outline-offset:3px}
+.stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center center;background:var(--bg);overflow:hidden;transition:background .5s}
+.stage.inv{background:var(--acc)}
+.slide{position:absolute;inset:0;padding:130px 150px 150px;display:none;flex-direction:column;gap:30px}
+.slide.active{display:flex}
+.slide.active>*{animation:up .7s cubic-bezier(.2,.8,.2,1) both}
+.slide.active>*:nth-child(2){animation-delay:.08s}.slide.active>*:nth-child(3){animation-delay:.16s}
+.slide.active>*:nth-child(4){animation-delay:.24s}.slide.active>*:nth-child(5){animation-delay:.32s}.slide.active>*:nth-child(n+6){animation-delay:.4s}
+@keyframes up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+
+/* 필름 테두리 */
+.chrome{position:absolute;inset:0;pointer-events:none;z-index:4;font-family:var(--mono);font-size:20px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3)}
+.chrome span{position:absolute;display:flex;align-items:center;gap:16px}
+.chrome .tl{left:52px;top:50px}.chrome .tr{right:52px;top:50px;flex-direction:row-reverse}
+.chrome .bl{left:52px;bottom:52px}.chrome .br{right:52px;bottom:52px;flex-direction:row-reverse}
+.chrome i{font-style:normal;font-size:34px;font-weight:300;line-height:1;letter-spacing:0;opacity:.7}
+.chrome .rail{position:absolute;left:92px;right:92px;bottom:88px;height:2px;background:var(--line)}
+.chrome .rail b{position:absolute;left:0;top:0;bottom:0;background:var(--acc);transition:width .6s cubic-bezier(.2,.8,.2,1)}
+.stage.inv .chrome{color:rgba(255,255,255,.75)}.stage.inv .chrome .rail{background:rgba(255,255,255,.25)}.stage.inv .chrome .rail b{background:#fff}
+
+.eyebrow{font-family:var(--mono);font-size:22px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--acc)}
+h1,h2,h3{margin:0;text-wrap:balance;line-height:1.15}
+h2{font-size:66px;font-weight:900;letter-spacing:-.045em}
+.lead{font-size:28px;color:var(--ink2);line-height:1.6;margin:0;max-width:1500px}
+.glow{text-shadow:none}
+.key{color:var(--acc)}
+.mk{background:linear-gradient(transparent 58%,var(--lav) 58%);font-weight:800;padding:0 .08em}
+.tag{display:inline-flex;align-items:center;gap:12px;font-family:var(--mono);font-size:19px;font-weight:500;letter-spacing:.08em;color:var(--ink2);width:fit-content}
+.tag::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--acc);box-shadow:0 0 0 6px var(--acc-soft);animation:blink 1.6s ease-in-out infinite}
+@keyframes blink{50%{box-shadow:0 0 0 10px rgba(98,90,254,.08)}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:30px;box-shadow:0 1px 2px rgba(8,35,63,.04),0 14px 40px -18px rgba(8,35,63,.18)}
+.demo{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:30px;box-shadow:0 1px 2px rgba(8,35,63,.04),0 24px 60px -28px rgba(8,35,63,.28)}
+.btn{border:none;border-radius:999px;padding:14px 30px;font-size:24px;font-weight:700;background:var(--acc);color:#fff;letter-spacing:-.01em;transition:transform .15s}
+.btn:hover:not(:disabled){transform:translateY(-1px)}
+.btn.line{background:var(--surface);color:var(--ink);border:1.5px solid var(--line)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.say{font-size:24px;line-height:1.55;border-radius:16px;padding:16px 22px}
+.say.ok{background:var(--mint);color:#0b4d34}
+.say.no{background:var(--pink);color:#8a1838}
+.say.info{background:var(--lav);color:#2d2580}
+.mono{font-family:var(--mono)}
+.pulse{animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(98,90,254,0)}50%{box-shadow:0 0 0 10px rgba(98,90,254,.18)}}
+.fic{flex:none;width:58px;height:70px;border-radius:6px 18px 6px 6px;display:grid;place-items:end center;padding-bottom:8px;font-family:var(--mono);font-size:14px;font-weight:600;color:#fff;letter-spacing:.02em}
+.fic.hwpx{background:#3d6fe0}.fic.hwp{background:#8b93a7}.fic.pdf{background:#e0505f}.fic.zip{background:#c8971f}
+
+/* 하단 */
+.foot{position:absolute;left:0;right:0;bottom:30px;height:50px;display:flex;align-items:center;justify-content:center;gap:20px;z-index:5}
+.dots{display:flex;align-items:center}
+.dot{width:30px;height:40px;border:none;background:none;position:relative;display:grid;place-items:center;padding:0}
+.dot::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--line);transition:.25s}
+.dot.past::before{background:var(--lav)}
+.dot.on::before{width:26px;border-radius:5px;background:var(--acc)}
+.dot.gap{margin-left:14px}
+.dot .tip{position:absolute;bottom:46px;left:50%;transform:translateX(-50%);white-space:nowrap;background:var(--ink);color:#fff;padding:7px 14px;border-radius:8px;font-size:18px;font-weight:600;opacity:0;pointer-events:none;transition:.15s}
+.dot:hover .tip,.dot:focus-visible .tip{opacity:1}
+.stage.inv .dot::before{background:rgba(255,255,255,.35)}.stage.inv .dot.on::before{background:#fff}
+.tocbtn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 16px;font-family:var(--mono);font-size:17px;letter-spacing:.08em;color:var(--ink2)}
+.nav{position:absolute;top:50%;transform:translateY(-50%);width:64px;height:64px;border:1px solid var(--line);background:var(--surface);border-radius:50%;font-size:34px;line-height:1;color:var(--ink3);z-index:5}
+.nav:hover{color:var(--acc);border-color:var(--acc)}
+.nav.prev{left:40px}.nav.next{right:40px}
+.stage.inv .nav{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.3);color:#fff}
+.toc{position:absolute;inset:0;background:rgba(251,251,253,.94);z-index:9;display:grid;place-items:center}
+.toc .panel{width:1100px;display:grid;grid-template-columns:1fr 1fr;gap:6px 30px}
+.toc .panel h3{grid-column:1/-1;font-size:34px;margin-bottom:10px;letter-spacing:-.03em}
+.toc button{text-align:left;background:none;border:none;padding:10px 12px;border-radius:10px;font-size:24px;color:var(--ink2)}
+.toc button:hover{background:var(--surface2);color:var(--ink)}
+.toc button b{font-family:var(--mono);font-weight:500;color:var(--acc);margin-right:12px}
+
+/* 1 표지: 인디고 전면 */
+.cover{justify-content:center;flex-direction:row;align-items:center;gap:80px}
+.cover .left{flex:1.15;display:flex;flex-direction:column;gap:30px;color:#fff}
+.cover .eyebrow{color:rgba(255,255,255,.8)}
+.cover h1{font-size:176px;font-weight:900;letter-spacing:-.06em;line-height:.98}
+.cover h1 .old{color:rgba(255,255,255,.5);text-decoration:line-through;text-decoration-thickness:8px;text-decoration-color:#fff}
+.cover h1 .new{color:#fff}
+.cover .sub{font-size:34px;font-weight:500;color:rgba(255,255,255,.9);letter-spacing:-.02em}
+.cover .by{font-family:var(--mono);font-size:19px;letter-spacing:.12em;color:rgba(255,255,255,.7)}
+.cover .right{flex:.85;display:flex;flex-direction:column;gap:18px}
+.cover .tag{color:rgba(255,255,255,.85)}.cover .tag::before{background:#fff;box-shadow:0 0 0 6px rgba(255,255,255,.2)}
+.drop{border-radius:24px;padding:26px;display:flex;flex-direction:column;gap:14px;background:var(--surface);box-shadow:0 30px 80px -30px rgba(10,10,60,.55)}
+.drop .ask{font-size:24px;color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:12px 22px;width:fit-content}
+.filebtn{display:flex;align-items:center;gap:18px;background:var(--surface2);border:1px solid var(--line);border-radius:16px;padding:12px 16px;font-size:26px;font-weight:700;text-align:left;color:var(--ink)}
+.filebtn:hover{border-color:var(--acc)}
+.filebtn.used{opacity:.55}
+#c-out .say{animation:up .4s cubic-bezier(.2,.8,.2,1) both}
+
+/* 2 파일 종류 */
+.types{display:grid;grid-template-columns:repeat(5,1fr);gap:22px}
+.tcard{border:1px solid var(--line);background:var(--surface);border-radius:22px;padding:30px 20px;display:flex;flex-direction:column;align-items:center;gap:16px;min-height:300px;transition:.25s;box-shadow:0 14px 40px -24px rgba(8,35,63,.25)}
+.tcard:hover{border-color:var(--acc)}
+.tcard .big{width:104px;height:124px;border-radius:10px 30px 10px 10px;display:grid;place-items:end center;padding-bottom:14px;font-size:26px;font-weight:900;color:#fff}
+.tcard .nm{font-size:32px;font-weight:800;letter-spacing:-.03em}
+.tcard .res{font-size:24px;font-weight:700;min-height:70px;text-align:center;line-height:1.35;color:var(--ink3)}
+.tcard.ok{background:#f3fbf7;border-color:var(--mint)}.tcard.ok .res{color:var(--ok)}
+.tcard.no{background:#fff6f8;border-color:var(--pink)}.tcard.no .res{color:var(--no)}
+.tcard.boost{background:var(--acc-soft);border-color:var(--acc)}.tcard.boost .res{color:var(--acc)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:40px;flex:1;min-height:0}
+
+/* 확장자 */
+.files{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+[data-k="ext"]{gap:22px}[data-k="ext"] .fic{width:42px!important;height:50px!important}
+.fcard{border:1px solid var(--line);background:var(--surface);border-radius:18px;padding:14px 18px;display:flex;flex-direction:column;gap:10px;box-shadow:0 10px 30px -22px rgba(8,35,63,.25)}
+.fcard .nm{display:flex;align-items:center;gap:16px;font-family:var(--mono);font-size:21px;font-weight:500;word-break:break-all}
+.fcard .ch{display:flex;gap:10px}
+.fcard .ch button{flex:1;border:1px solid var(--line);background:var(--surface2);border-radius:999px;padding:9px;font-size:21px;font-weight:700}
+.fcard .ch button:hover:not(:disabled){border-color:var(--acc);color:var(--acc)}
+.fcard .why{font-size:20px;line-height:1.5;color:var(--ink3)}
+.fcard.ok{background:#f3fbf7;border-color:var(--mint)}.fcard.ok .why{color:var(--ok)}
+.fcard.no{background:#fff6f8;border-color:var(--pink)}.fcard.no .why{color:var(--no)}
+.menu-path{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:24px}
+.menu-path span{background:var(--sky);border-radius:999px;padding:6px 18px;font-weight:700}
+.menu-path i{font-style:normal;color:var(--ink3)}
+
+/* 요청 */
+.slot{display:flex;flex-direction:column;gap:10px}
+.slot h3{font-size:27px;letter-spacing:-.03em}
+.chips{display:flex;gap:12px}
+.chip{flex:1;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:16px;padding:12px 16px;font-size:20px;line-height:1.45;color:var(--ink)}
+.chip:hover{border-color:var(--acc)}
+.chip.good[aria-pressed="true"]{border-color:transparent;background:var(--mint)}
+.chip.bad[aria-pressed="true"]{border-color:transparent;background:var(--pink)}
+.fb{font-size:21px;min-height:30px;font-weight:700}
+.fb.ok{color:var(--ok)}.fb.no{color:var(--no)}
+
+/* 보내기 */
+.chat{display:flex;flex-direction:column;gap:14px;overflow:hidden}
+.msg{border-radius:20px;padding:16px 20px;font-size:21px;line-height:1.55;max-width:92%}
+.msg.me{align-self:flex-end;background:var(--surface2);border:1px solid var(--line)}
+.msg.ai{background:var(--surface);border:1px solid var(--line)}
+.att{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:17px;color:var(--ink2);margin-bottom:6px}
+.log{display:flex;flex-direction:column;gap:6px;font-family:var(--mono);font-size:18px;color:var(--ink3);margin-top:8px}
+.log .y{color:var(--acc);font-weight:700}
+.dl{display:flex;align-items:center;gap:14px;margin-top:12px;background:var(--acc-soft);border-radius:14px;padding:12px}
+.paper{background:#fff;color:#111;border:1px solid var(--line);border-radius:8px;padding:34px 40px;font-family:"Batang","Noto Serif KR",serif;font-size:22px;box-shadow:0 30px 70px -36px rgba(8,35,63,.35)}
+.paper h4{text-align:center;font-size:32px;letter-spacing:.3em;margin:0 0 6px}
+.paper .s{text-align:center;font-size:19px;color:#444;margin:0 0 18px}
+.paper table{width:100%;border-collapse:collapse;color:inherit;font-size:inherit}
+.paper th,.paper td{border:1.5px solid #333;padding:10px 14px;text-align:left;vertical-align:top;line-height:1.45}
+.paper th{background:#eef1f6;width:22%;white-space:nowrap}
+.paper td.blank{color:#a0a0a0}
+.paper td.fill{background:#eeecff}
+.paper td.err{background:#ffe0e8;outline:3px solid var(--no);outline-offset:-3px}
+.paper td.fixed{background:#d9f3e7}
+.paper .end{text-align:right;margin-top:14px;font-size:20px}
+.vtabs{display:flex;gap:8px}
+.vtabs button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 20px;font-size:20px;font-weight:700;color:var(--ink3)}
+.vtabs button[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+
+/* 확인 */
+.checks{display:flex;flex-direction:column;gap:12px}
+.ck{display:flex;gap:16px;align-items:flex-start;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:18px;padding:12px 20px;box-shadow:0 10px 30px -24px rgba(8,35,63,.25)}
+.ck:hover{border-color:var(--acc)}
+.ck .bx{flex:none;width:34px;height:34px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-weight:900;font-size:20px}
+.ck .ht{font-size:25px;display:block;font-weight:800;letter-spacing:-.02em}
+.ck small{display:block;font-size:20px;color:var(--ink2);line-height:1.5;margin-top:4px}
+.ck.done{background:#f3fbf7;border-color:var(--mint)}.ck.done .bx{border-color:var(--ok);background:var(--ok);color:#fff}
+.ck.found{background:#fff6f8;border-color:var(--pink)}.ck.found .bx{border-color:var(--no);color:var(--no)}
+
+/* 양식 틀 */
+.tpls{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.tpl{border:1px solid var(--line);background:var(--surface);border-radius:18px;padding:20px;text-align:left;display:flex;flex-direction:column;gap:6px}
+.tpl b{font-size:28px;letter-spacing:-.03em}.tpl small{font-family:var(--mono);font-size:16px;letter-spacing:.06em;color:var(--ink3)}
+.tpl:hover{border-color:var(--acc)}
+.tpl[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}.tpl[aria-pressed="true"] small{color:rgba(255,255,255,.65)}
+.reqbox{background:var(--surface2);border:1px solid var(--line);border-radius:18px;padding:20px 24px;font-size:24px;line-height:1.6;white-space:pre-wrap}
+.mini{background:#fff;color:#111;border:1px solid var(--line);border-radius:8px;padding:22px 26px;font-family:"Batang","Noto Serif KR",serif;font-size:18px;line-height:1.6;box-shadow:0 24px 60px -34px rgba(8,35,63,.35)}
+.mini .t{text-align:center;font-weight:800;font-size:24px;margin-bottom:8px}
+.mini .ln{height:12px;background:#e8eaf1;border-radius:4px;margin:8px 0}
+.mini .tb{color:inherit;display:grid;grid-template-columns:28% 1fr;border:1.5px solid #444;margin-top:10px}
+.mini .tb div{border:1px solid #888;padding:6px 10px;min-height:32px}
+.mini .tb div:nth-child(odd){background:#eef1f6;font-weight:700}
+
+/* 퀴즈 */
+.qwrap{display:flex;flex-direction:column;gap:22px;max-width:1450px}
+.qn{font-family:var(--mono);font-size:22px;letter-spacing:.14em;color:var(--acc)}
+.qt{font-size:48px;font-weight:900;line-height:1.3;letter-spacing:-.04em}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.opts button{text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:18px;padding:20px 24px;font-size:25px;font-weight:600;color:var(--ink)}
+.opts button:hover:not(:disabled){border-color:var(--acc)}
+.opts button.r{background:var(--mint);border-color:transparent;color:#0b4d34}
+.opts button.w{background:var(--pink);border-color:transparent;color:#8a1838}
+.qexp{font-size:25px;color:var(--ink2);min-height:40px}
+.score{font-size:120px;font-weight:900;letter-spacing:-.05em;color:var(--acc)}
+
+/* 마무리 */
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.three .panel h3{font-size:34px;margin-bottom:10px;letter-spacing:-.03em}
+.three .panel p{font-size:23px;color:var(--ink2);line-height:1.6;margin:0}
+.three .num{font-family:var(--mono);font-size:20px;letter-spacing:.14em;color:var(--acc);margin-bottom:6px}
+
+/* 반전 */
+.twist{display:grid;grid-template-columns:1fr 1fr;gap:60px;flex:1;min-height:0;align-items:start}
+.tw-h{font-size:118px;font-weight:900;line-height:1.02;letter-spacing:-.06em}
+.tw-h .old{color:var(--ink3);text-decoration:line-through;text-decoration-thickness:7px;text-decoration-color:var(--no);transition:color .8s,text-decoration-color .8s;display:inline-block}
+.tw-h .old.alive{color:var(--acc);text-decoration-color:transparent;animation:glitch .5s steps(2) 1}
+@keyframes glitch{0%{transform:translate(0)}20%{transform:translate(-6px,3px);text-shadow:4px 0 var(--pink),-4px 0 var(--sky)}40%{transform:translate(5px,-2px)}60%{transform:translate(-3px,1px);text-shadow:-3px 0 var(--lav),3px 0 var(--mint)}100%{transform:none;text-shadow:none}}
+.band{position:relative;padding:34px 40px;border-radius:24px;overflow:hidden;opacity:0;transform:translateY(14px);transition:.6s .3s}
+.band::before{content:"";position:absolute;inset:-40%;background:linear-gradient(110deg,#d3e2ff 10%,var(--lav) 35%,var(--peach) 60%,var(--pink) 85%);filter:blur(24px);transform:skewY(-6deg);animation:drift 8s ease-in-out infinite alternate}
+@keyframes drift{to{transform:skewY(-6deg) translateX(-8%)}}
+.band>*{position:relative}
+.band.on{opacity:1;transform:none}
+.tw-say{font-size:60px;font-weight:900;line-height:1.25;letter-spacing:-.05em}
+.tw-sub{font-size:26px;color:var(--ink2);margin-top:8px}
+
+/* kordoc 사전 항목 */
+.dict{position:relative;display:flex;flex-direction:column;gap:14px;overflow:hidden;align-self:start}
+.dict .pos{font-family:var(--mono);font-size:19px;letter-spacing:.16em;color:var(--ink3)}
+.dict .word{font-family:var(--serif);font-size:120px;font-weight:600;letter-spacing:-.03em;line-height:1}
+.dict .def{font-size:28px;line-height:1.55}
+.dict .def b{color:var(--acc)}
+.dict hr{border:none;border-top:1px solid var(--line);margin:6px 0;width:70%}
+.dict .wm{position:absolute;right:-10px;top:-40px;font-family:var(--serif);font-size:230px;font-weight:700;color:var(--lav);opacity:.4;line-height:1;pointer-events:none;z-index:0}
+.dict>*:not(.wm){position:relative;z-index:1}
+.kchips{display:flex;flex-wrap:wrap;gap:10px}
+.kchips span{font-family:var(--mono);font-size:19px;border-radius:999px;padding:6px 16px}
+.ksteps{display:flex;flex-direction:column;gap:14px}
+.kstep{display:flex;align-items:center;gap:22px;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:20px;padding:20px 26px;font-size:30px;font-weight:800;letter-spacing:-.03em;color:var(--ink3)}
+.kstep .n{flex:none;font-family:var(--mono);font-size:20px;font-weight:500;letter-spacing:.1em}
+.kstep.now{color:var(--ink);border-color:var(--acc);box-shadow:0 0 0 6px var(--acc-soft)}
+.kstep.done{background:var(--mint);border-color:transparent;color:#0b4d34}
+
+/* 뭘 쓸까 */
+.sits{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.sit{text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:20px;padding:26px;font-size:26px;font-weight:800;letter-spacing:-.02em;line-height:1.45;min-height:230px;display:flex;flex-direction:column;gap:12px;color:var(--ink)}
+.sit:hover{border-color:var(--acc)}
+.sit .ans{font-size:20px;font-weight:500;color:var(--ink3);letter-spacing:0}
+.sit.on{border-color:var(--acc);box-shadow:0 0 0 6px var(--acc-soft)}
+.sit.on .ans{color:var(--ink2)}
+.sit .pill{display:inline-block;border-radius:999px;padding:2px 12px;font-family:var(--mono);font-size:17px;font-weight:600;margin-right:6px}
+.pill.k{background:var(--lav);color:#2d2580}.pill.h{background:var(--sky);color:#123d7a}
+.same{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.same div{border-radius:18px;padding:18px 22px;font-size:22px;line-height:1.5;color:var(--ink2)}
+.same div:nth-child(1){background:var(--sky)}.same div:nth-child(2){background:var(--lav)}.same div:nth-child(3){background:var(--mint)}
+.same b{display:block;color:var(--ink);font-size:27px;letter-spacing:-.03em;margin-bottom:4px}
+
+/* ===== 크기 키우기 ===== */
+.slide{padding:120px 116px 140px;gap:28px}
+h2{font-size:76px}
+.lead{font-size:32px}
+.eyebrow{font-size:24px}
+.tag{font-size:22px}
+.btn{font-size:27px;padding:16px 34px}
+.say{font-size:27px}
+.types{gap:26px}.tcard{min-height:360px;padding:36px 22px}.tcard .big{width:120px;height:144px;font-size:30px}.tcard .nm{font-size:38px}.tcard .res{font-size:27px}
+.files{gap:18px}.fcard{padding:18px 22px;gap:12px}.fcard .nm{font-size:25px}.fcard .ch button{font-size:24px;padding:11px}.fcard .why{font-size:22px}
+.menu-path{font-size:27px}
+.slot h3{font-size:31px}.chip{font-size:24px;padding:14px 18px}.fb{font-size:24px}
+.msg{font-size:24px}.att{font-size:19px}.log{font-size:21px}
+.paper{font-size:25px;padding:36px 44px}.paper h4{font-size:36px}.paper .s{font-size:21px}
+.vtabs button{font-size:22px}
+.ck{padding:14px 22px}.ck .ht{font-size:28px}.ck small{font-size:23px}.ck .bx{width:38px;height:38px}
+.tpl b{font-size:32px}.tpl{padding:24px}.tpl small{font-size:18px}
+.reqbox{font-size:27px}
+.mini{font-size:20px}
+.qt{font-size:56px}.opts button{font-size:29px;padding:24px 28px}.qexp{font-size:28px}
+.three .panel h3{font-size:40px}.three .panel p{font-size:26px}.three .panel{padding:34px}
+.tw-h{font-size:132px}.tw-say{font-size:68px}.tw-sub{font-size:30px}
+.dict .word{font-size:136px}.dict .def{font-size:31px}.kchips span{font-size:22px;padding:8px 18px}
+.kstep{font-size:36px;padding:26px 30px}
+.same div{font-size:25px}.same b{font-size:31px}
+.cover h1{font-size:190px}.cover .sub{font-size:38px}
+.filebtn{font-size:29px}.drop .ask{font-size:26px}
+
+/* ===== 벤토 그리드: 뭘 쓸까 ===== */
+.sits{grid-template-columns:1.25fr 1fr 1fr;grid-template-rows:auto auto;gap:18px}
+.sit{font-size:30px;min-height:190px;padding:28px}
+.sit .ans{font-size:23px}.sit .pill{font-size:19px}
+.sit:nth-child(1){grid-row:span 2;background:linear-gradient(160deg,var(--acc-soft),#fff 70%);font-size:40px;justify-content:space-between}
+.sit:nth-child(1) .ans{font-size:27px}
+.sit:nth-child(2){grid-column:span 2}
+
+/* ===== 호버 + 부드러운 전환 (200ms) ===== */
+.tcard,.fcard,.sit,.tpl,.ck,.kstep,.filebtn,.chip,.three .panel,.opts button,.same div,.dl{transition:transform .2s ease,box-shadow .2s ease,background-color .2s ease,border-color .2s ease,color .2s ease}
+.tcard:hover,.fcard:hover,.sit:hover,.tpl:hover,.ck:hover,.kstep:hover,.filebtn:hover,.three .panel:hover,.same div:hover{transform:translateY(-6px);box-shadow:0 2px 4px rgba(8,35,63,.05),0 26px 50px -22px rgba(8,35,63,.38)}
+.chip:hover,.opts button:hover:not(:disabled){transform:translateY(-3px)}
+.btn,.vtabs button,.tocbtn,.nav{transition:transform .2s ease,background-color .2s ease,box-shadow .2s ease,color .2s ease}
+
+/* ===== 스태거: 카드가 0.1초 간격으로 차례로 ===== */
+.stg>*{animation:upS .6s cubic-bezier(.2,.8,.2,1) both}
+@keyframes upS{from{opacity:0;translate:0 26px}to{opacity:1;translate:0 0}}
+.stg>*:nth-child(1){animation-delay:.2s}.stg>*:nth-child(2){animation-delay:.3s}.stg>*:nth-child(3){animation-delay:.4s}
+.stg>*:nth-child(4){animation-delay:.5s}.stg>*:nth-child(5){animation-delay:.6s}.stg>*:nth-child(6){animation-delay:.7s}
+
+/* ===== 표지: 글래스모피즘 + 패럴랙스 장식 ===== */
+.blobs{position:absolute;inset:0;pointer-events:none;overflow:hidden;animation:none!important}
+.blobs i{position:absolute;border-radius:50%;filter:blur(2px);transition:transform .25s ease-out}
+.blobs i:nth-child(1){width:520px;height:520px;right:-140px;top:150px;background:radial-gradient(circle at 30% 30%,#ffd6e4,#b9a8ff 70%)}
+.blobs i:nth-child(2){width:380px;height:380px;left:-120px;bottom:-140px;background:radial-gradient(circle at 30% 30%,#cceede,#8fb1ff 70%)}
+.blobs i:nth-child(3){width:200px;height:200px;right:900px;top:120px;background:radial-gradient(circle at 30% 30%,#ffdcc8,#ff9fbf 75%)}
+.cover .left,.cover .right{position:relative;z-index:1}
+.drop{background:rgba(255,255,255,.22);border:1.5px solid rgba(255,255,255,.55);-webkit-backdrop-filter:blur(26px) saturate(1.3);backdrop-filter:blur(26px) saturate(1.3);box-shadow:0 30px 80px -30px rgba(10,10,60,.5)}
+.drop .ask{color:#fff;border-color:rgba(255,255,255,.6);background:rgba(255,255,255,.12)}
+.cover .filebtn{background:rgba(255,255,255,.88);border-color:transparent}
+
+/* ===== 스켈레톤 로딩 ===== */
+.paper td.sk{color:transparent;background:linear-gradient(90deg,#eef0f6 25%,#f8f9fc 45%,#eef0f6 65%) 0 0/300% 100%;animation:shimmer 1.1s linear infinite}
+@keyframes shimmer{to{background-position:-150% 0}}
+
+/* ===== 마이크로 인터랙션 ===== */
+.btn .spin{display:inline-block;width:22px;height:22px;border:3px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;vertical-align:-3px;margin-right:10px;animation:rot .7s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+.btn.okay{background:var(--ok)}
+.btn .chk{display:inline-block;animation:pop .35s cubic-bezier(.3,1.6,.5,1) both;margin-right:8px}
+@keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+
+/* ===== 토스트 ===== */
+.toast{position:absolute;left:50%;bottom:120px;transform:translate(-50%,30px);opacity:0;z-index:20;background:var(--ink);color:#fff;border-radius:999px;padding:16px 30px;font-size:25px;font-weight:700;display:flex;align-items:center;gap:12px;box-shadow:0 20px 50px -18px rgba(8,35,63,.6);transition:transform .3s cubic-bezier(.2,.8,.2,1),opacity .3s;pointer-events:none}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.toast b{color:var(--mint)}
+
+/* ===== 툴팁 ===== */
+[data-tip]{position:relative;cursor:help}
+[data-tip]::after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 12px);transform:translate(-50%,6px);width:max-content;max-width:420px;white-space:normal;background:var(--ink);color:#fff;font-family:var(--font);font-size:20px;font-weight:500;letter-spacing:0;line-height:1.45;padding:10px 16px;border-radius:12px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:6;text-align:left}
+[data-tip]:hover::after,[data-tip]:focus-visible::after{opacity:1;transform:translate(-50%,0)}
+
+[data-k="ext"]{gap:20px}[data-k="ext"] h2{font-size:66px}
+[data-k="ext"] .fcard{padding:14px 20px;gap:10px}[data-k="ext"] .fcard .why{font-size:21px}
+[data-k="ext"] .fcard .ch button{padding:8px}
+[data-k="req"]{gap:18px}[data-k="req"] h2{font-size:64px}[data-k="req"] .lead{font-size:27px}
+[data-k="req"] #slots{gap:10px!important}[data-k="req"] .chip{padding:11px 16px;font-size:22px}
+.btn.busy,.btn.okay{opacity:1}
+.btn.busy{background:var(--ink2)}
+.twist{grid-template-columns:1.2fr .8fr}
+.bigmark{font-family:var(--mono);font-size:44px;font-weight:600;letter-spacing:-.01em;color:var(--acc);display:flex;align-items:center;gap:18px}
+.bigmark s{color:var(--ink3);text-decoration-color:var(--no);text-decoration-thickness:4px}
+
+/* GPT 장 */
+.plans{display:flex;flex-direction:column;gap:14px}
+.plan{display:flex;align-items:center;gap:22px;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:20px;padding:22px 26px;transition:transform .2s,box-shadow .2s,background-color .2s,border-color .2s}
+.plan:hover{transform:translateY(-6px);box-shadow:0 26px 50px -22px rgba(8,35,63,.38)}
+.plan .mk2{flex:none;width:64px;height:64px;border-radius:50%;display:grid;place-items:center;font-size:34px;font-weight:900;background:var(--surface2);color:var(--ink3)}
+.plan b{display:block;font-size:31px;letter-spacing:-.03em}
+.plan small{display:block;font-size:22px;color:var(--ink3);margin-top:4px;line-height:1.45}
+.plan.y{background:#f3fbf7;border-color:var(--mint)}.plan.y .mk2{background:var(--ok);color:#fff}
+.plan.n{background:#fff6f8;border-color:var(--pink)}.plan.n .mk2{background:var(--no);color:#fff}
+.plan.m{background:#fffaf0;border-color:var(--peach)}.plan.m .mk2{background:#e6a03a;color:#fff}
+.plan.on small{color:var(--ink2)}
+.usesteps{display:flex;flex-direction:column;gap:14px}
+.usesteps>div{display:flex;gap:20px;align-items:flex-start;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px 22px;transition:transform .2s,box-shadow .2s}
+.usesteps>div:hover{transform:translateY(-6px);box-shadow:0 26px 50px -22px rgba(8,35,63,.38)}
+.usesteps b{flex:none;font-family:var(--mono);font-size:22px;font-weight:600;color:#fff;background:var(--acc);width:44px;height:44px;border-radius:50%;display:grid;place-items:center}
+.usesteps span{font-size:29px;font-weight:700;letter-spacing:-.02em;line-height:1.35}
+.usesteps strong{color:var(--acc)}
+.usesteps small{display:block;font-size:21px;font-weight:500;color:var(--ink3);letter-spacing:0;margin-top:4px}
+.rules{display:flex;flex-direction:column;gap:12px}
+.rule{display:flex;align-items:center;gap:16px;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:16px;padding:16px 20px;font-size:26px;font-weight:700;letter-spacing:-.02em;transition:transform .2s,background-color .2s,border-color .2s}
+.rule:hover{transform:translateY(-3px);border-color:var(--acc)}
+.rule .bx{flex:none;width:32px;height:32px;border-radius:9px;border:2px solid var(--line);display:grid;place-items:center;font-size:20px;color:#fff}
+.rule[aria-pressed="true"]{background:var(--acc-soft);border-color:var(--acc)}
+.rule[aria-pressed="true"] .bx{background:var(--acc);border-color:var(--acc)}
+
+/* ===== 2장: 스캔 + 한글 카드 쪼개기 ===== */
+.scanwrap{position:relative}
+.types{grid-template-columns:repeat(4,1fr) 1.9fr}
+.tcard{min-height:330px}
+.tcard .res{color:var(--ink3);font-size:30px}
+.tcard.hit{animation:hit .45s cubic-bezier(.3,1.5,.5,1)}
+@keyframes hit{0%{transform:scale(1)}40%{transform:scale(1.06)}100%{transform:scale(1)}}
+.tcard.no.hit{animation:shake .45s ease}
+@keyframes shake{20%{transform:translateX(-10px)}40%{transform:translateX(9px)}60%{transform:translateX(-6px)}80%{transform:translateX(4px)}}
+.scanline{position:absolute;top:-14px;bottom:-14px;left:0;width:6px;border-radius:3px;background:var(--acc);box-shadow:0 0 0 10px rgba(98,90,254,.12),0 0 40px rgba(98,90,254,.6);opacity:0;pointer-events:none}
+.scanline.go{animation:scan 1.9s cubic-bezier(.45,0,.55,1) .25s forwards}
+@keyframes scan{0%{left:0;opacity:1}92%{opacity:1}100%{left:calc(100% - 6px);opacity:0}}
+.tcard.split{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:0;align-items:stretch;background:transparent;border-color:transparent;box-shadow:none}
+.tcard.split:hover{transform:none;box-shadow:none}
+.half{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;border-radius:20px;padding:20px 10px;text-align:center;animation:splitIn .55s cubic-bezier(.2,.8,.2,1) both}
+.half .fic{width:96px;height:116px;font-size:18px}
+.half b{font-family:var(--mono);font-size:42px;font-weight:600}
+.half .res{font-size:24px!important;line-height:1.4;min-height:0}
+.half.no{background:#fff6f8;border:1px solid var(--pink);color:var(--no);--dx:40px}
+.half.yes{background:var(--acc-soft);border:1.5px solid var(--acc);color:var(--acc);box-shadow:0 18px 40px -20px rgba(98,90,254,.6);--dx:-40px;animation-delay:.12s}
+@keyframes splitIn{from{opacity:0;transform:translateX(var(--dx)) scale(.9)}to{opacity:1;transform:none}}
+.pathpanel{display:flex;flex-direction:column;gap:14px;padding:24px 30px;animation:up .5s cubic-bezier(.2,.8,.2,1) both}
+
+/* ===== 요청 문장 띠 ===== */
+[data-k="req"] #slots{gap:14px!important}
+.slot{display:grid;grid-template-columns:300px 1fr;gap:24px;align-items:center;border-radius:24px;padding:20px 24px;transition:box-shadow .2s,transform .2s}
+.slot:nth-child(1){background:var(--sky)}.slot:nth-child(2){background:var(--lav)}.slot:nth-child(3){background:var(--mint)}
+.slot.done{box-shadow:0 0 0 3px var(--ok) inset}
+.slot-l{display:flex;flex-direction:column;gap:6px}
+.slot-l .sn{font-family:var(--mono);font-size:22px;font-weight:600;letter-spacing:.12em;color:var(--ink2)}
+.slot-l h3{font-size:34px;letter-spacing:-.04em;line-height:1.2}
+.slot-r{display:flex;flex-direction:column;gap:10px;min-width:0}
+[data-k="req"] .chip{background:rgba(255,255,255,.9);border-color:transparent;font-size:23px;padding:14px 18px;border-radius:16px;min-height:72px}
+[data-k="req"] .chip:hover{border-color:var(--acc)}
+[data-k="req"] .chip.good[aria-pressed="true"]{background:#fff;border-color:var(--ok);box-shadow:0 0 0 2px var(--ok)}
+[data-k="req"] .chip.bad[aria-pressed="true"]{background:#fff;border-color:var(--no);box-shadow:0 0 0 2px var(--no)}
+[data-k="req"] .fb{font-size:22px;min-height:28px}
+
+/* ===== 실제 가정통신문 ===== */
+.paper{padding:26px 34px;font-size:19px;line-height:1.55}
+.paper .lh{display:flex;align-items:center;justify-content:space-between;border-bottom:3px double #222;padding-bottom:10px;margin-bottom:12px}
+.paper .lh .sch{display:flex;align-items:center;gap:10px;font-weight:700;font-size:20px}
+.paper .lh .logo{width:38px;height:38px;border-radius:50%;border:2px solid #444;display:grid;place-items:center;font-size:13px;font-weight:700}
+.paper .lh .meta{font-size:15px;text-align:right;color:#333;line-height:1.4}
+.paper h4{font-size:30px;margin:2px 0 2px}
+.paper .s{font-size:17px;margin:0 0 10px}
+.paper .greet{font-size:17px;margin:0 0 10px;text-indent:1em}
+.paper th,.paper td{padding:7px 12px;font-size:18px}
+.paper .end{font-size:17px;margin-top:8px}
+.paper .cut{display:flex;align-items:center;gap:10px;margin:12px 0 8px;font-size:15px;color:#555}
+.paper .cut::before,.paper .cut::after{content:"";flex:1;border-top:2px dashed #999}
+.paper .reply{font-size:16px}
+.paper .reply table th,.paper .reply table td{font-size:15px;padding:5px 10px}
+.paper .reply .rt{text-align:center;font-weight:800;font-size:19px;letter-spacing:.2em;margin-bottom:6px}
+.paper .chk{display:inline-flex;gap:14px}
+[data-k="check"] .paper,[data-k="send"] .paper{zoom:.8}
+
+.cover .cover-q{font-family:var(--font);font-size:40px;font-weight:800;letter-spacing:-.03em;text-transform:none;line-height:1.3;color:#fff}
+.cover .cover-q::before{content:"";display:block;width:56px;height:6px;border-radius:3px;background:#ff5c8a;margin-bottom:18px}
+
+/* ===== 표지: 채점 장면 ===== */
+.cover{justify-content:center}
+.cover .left{flex:1;max-width:1500px;gap:34px}
+.cover h1{font-size:236px;line-height:1;margin-bottom:26px;letter-spacing:-.06em;cursor:pointer;outline:none;width:fit-content}
+.cover h1:focus-visible{outline:3px dashed rgba(255,255,255,.6);outline-offset:20px;border-radius:12px}
+.cover h1 .old,.cover h1 .new{position:relative;display:inline-block;color:#fff;text-decoration:none;transition:color .5s,transform .2s,text-shadow .5s}
+.cover h1:not(.s1) .old:hover{transform:translateY(-4px) rotate(-2deg)}
+.cover h1.s1 .old{color:rgba(255,255,255,.42)}
+.cover h1.s1:not(.s2) .new:hover{transform:translateY(-4px) rotate(2deg)}
+.cover h1.s2 .new{text-shadow:0 0 40px rgba(182,243,106,.45)}
+.pen{position:absolute;overflow:visible;pointer-events:none;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.pen path{stroke-dasharray:1;stroke-dashoffset:1;opacity:0;transition:stroke-dashoffset .6s cubic-bezier(.7,0,.25,1)}
+.pen.strike{left:-6%;width:112%;top:40%;height:34%}
+.pen.strike path{stroke:#ff5c8a;stroke-width:16;filter:drop-shadow(0 6px 14px rgba(255,40,100,.5))}
+.pen.ring{left:-9%;width:118%;top:-12%;height:122%}
+.pen.ring path{stroke:#b6f36a;stroke-width:9;filter:drop-shadow(0 4px 12px rgba(150,230,60,.45));transition-duration:.85s}
+.cover h1.s1 .strike path,.cover h1.s2 .ring path{stroke-dashoffset:0;opacity:1}
+.hint{position:absolute;left:50%;bottom:-34px;transform:translateX(-50%);display:inline-flex;align-items:center;gap:10px;white-space:nowrap;font-family:var(--font);font-size:22px;font-weight:700;letter-spacing:0;color:#fff;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.4);border-radius:999px;padding:6px 16px;transition:opacity .3s}
+.hint::before{content:"";width:10px;height:10px;border-radius:50%;background:#fff;animation:blink2 1.4s ease-in-out infinite}
+@keyframes blink2{50%{opacity:.25}}
+#hint2{opacity:0}
+.cover h1.s1 #hint1{opacity:0}
+.cover h1.s1:not(.s2) #hint2{opacity:1}
+.cover h1.s2 .hint{opacity:0}
+
+/* ===== 2장 카드: 누르면 확인 ===== */
+.tcard{cursor:pointer}
+[data-k="types"] .tcard{min-height:0;padding:26px 18px 22px;gap:12px}
+[data-k="types"] .tcard .big{width:100px;height:120px;font-size:28px}
+[data-k="types"] .half .fic{width:84px;height:100px}
+.tcard .ex{font-family:var(--mono);font-size:18px;color:var(--ok);min-height:24px;opacity:0;transform:translateY(6px);transition:opacity .3s .15s,transform .3s .15s}
+.tcard.rev .ex{opacity:1;transform:none}
+.tcard.rev:not(.ready){cursor:default}
+.tcard.rev:not(.ready):hover{transform:none;box-shadow:0 14px 40px -24px rgba(8,35,63,.25)}
+.tcard.ready{cursor:pointer;animation:pulse 1.6s ease-in-out infinite}
+.tcard.ready .res::after{content:"눌러서 열기";display:block;margin-top:8px;font-family:var(--mono);font-size:17px;color:var(--acc)}
+/* ===== 누를 수 없는 카드는 떠오르지 않게 ===== */
+.three .panel:hover,.same div:hover,.usesteps>div:hover{transform:none;box-shadow:inherit}
+.three .panel:hover{box-shadow:0 1px 2px rgba(8,35,63,.04),0 14px 40px -18px rgba(8,35,63,.18)}
+.same div:hover,.usesteps>div:hover{box-shadow:none}
+
+/* ===== 완성된 요청 입력창 ===== */
+.cmp-sheet{position:absolute;left:116px;right:116px;bottom:118px;z-index:3;display:flex;flex-direction:column;gap:14px;padding:22px 28px 26px;border-radius:30px;background:rgba(251,251,253,.78);-webkit-backdrop-filter:blur(20px) saturate(1.2);backdrop-filter:blur(20px) saturate(1.2);border:1px solid rgba(255,255,255,.9);box-shadow:0 -6px 30px -10px rgba(8,35,63,.18),0 40px 90px -30px rgba(8,35,63,.45);animation:sheetUp .55s cubic-bezier(.2,.8,.2,1) both}
+.slide.active>.cmp-sheet{animation:sheetUp .55s cubic-bezier(.2,.8,.2,1) both}
+@keyframes sheetUp{from{opacity:0;transform:translateY(60px)}to{opacity:1;transform:none}}
+.cmp-head{display:flex;align-items:center;justify-content:space-between}
+.cmp-label{font-family:var(--mono);font-size:20px;letter-spacing:.12em;color:var(--acc)}
+.cmp-box{background:#fff;border:1.5px solid var(--line);border-radius:26px;padding:20px 24px 16px;display:flex;flex-direction:column;gap:14px;box-shadow:0 10px 30px -18px rgba(8,35,63,.3)}
+.cmp-att{display:flex;align-items:center;gap:14px;width:fit-content;background:var(--sky);border-radius:16px;padding:8px 18px 8px 10px}
+.cmp-att b{display:block;font-size:22px}
+.cmp-att small{display:block;font-family:var(--mono);font-size:15px;color:var(--ink2)}
+.cmp-text{font-size:29px;line-height:1.6;min-height:3.2em;color:var(--ink)}
+.cmp-text .s2{background:var(--lav);border-radius:6px;padding:1px 4px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.cmp-text .s3{background:var(--mint);border-radius:6px;padding:1px 4px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.caret{display:inline-block;width:3px;height:1.05em;background:var(--acc);vertical-align:-.15em;margin-left:2px;animation:blink2 .9s steps(1) infinite}
+.cmp-bar{display:flex;align-items:center;gap:14px;border-top:1px solid var(--line);padding-top:12px}
+.cmp-plus{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;font-size:24px;color:var(--ink3)}
+.cmp-hint{font-family:var(--mono);font-size:17px;color:var(--ink3);flex:1}
+.cmp-send{display:flex;align-items:center;gap:12px;border:none;background:var(--line);color:var(--ink3);border-radius:999px;padding:8px 8px 8px 22px;font-size:22px;font-weight:700;transition:background-color .2s,color .2s,transform .2s;pointer-events:none}
+.cmp-send b{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.6);display:grid;place-items:center;font-size:24px}
+.cmp-send.ready{background:var(--acc);color:#fff;pointer-events:auto;animation:pulse 1.6s ease-in-out infinite}
+.cmp-send.ready b{background:rgba(255,255,255,.22)}
+.cmp-send.ready:hover{transform:translateY(-2px)}
+
+/* ===== 받았어요 → 다음 ===== */
+.btn.okay.go-next{cursor:pointer;animation:pulse 1.6s ease-in-out infinite}
+.btn.okay.go-next:hover{transform:translateY(-2px)}
+.btn .nx{margin-left:6px}
+/* ===== 6장 강조 ===== */
+.log div{transition:font-size .35s,color .35s}
+.log div.emph{font-family:var(--font);font-size:34px;font-weight:900;color:var(--acc);letter-spacing:-.03em;margin:4px 0;animation:emph .6s cubic-bezier(.3,1.5,.5,1)}
+.log div.emph .y{font-size:34px}
+@keyframes emph{0%{transform:scale(.8);background:transparent}50%{transform:scale(1.08)}100%{transform:none}}
+.log div.emph{background:linear-gradient(transparent 55%,var(--lav) 55%);width:fit-content;padding:0 6px;border-radius:4px}
+/* ===== 중요 공지 ===== */
+.notice{position:absolute;inset:0;z-index:30;display:grid;place-items:center;background:rgba(8,20,45,.55);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.notice.on{animation:ntBg .35s ease both}
+@keyframes ntBg{from{opacity:0}to{opacity:1}}
+.nt-card{width:1180px;background:#fff;border-radius:36px;padding:56px 70px 52px;display:flex;flex-direction:column;align-items:flex-start;gap:20px;box-shadow:0 60px 120px -40px rgba(0,0,0,.6);position:relative;overflow:hidden}
+.nt-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:16px;background:repeating-linear-gradient(-45deg,#ffcf3f 0 18px,#08233f 18px 36px)}
+.notice.on .nt-card{animation:ntPop .55s cubic-bezier(.25,1.4,.5,1) both}
+@keyframes ntPop{from{opacity:0;transform:scale(.85) translateY(30px)}to{opacity:1;transform:none}}
+.nt-badge{font-family:var(--mono);font-size:22px;font-weight:600;letter-spacing:.12em;background:#ffcf3f;color:#08233f;border-radius:999px;padding:8px 20px}
+.nt-pre{margin:0;font-size:34px;color:var(--ink2)}
+.nt-card h3{font-size:88px;font-weight:900;letter-spacing:-.05em;line-height:1.15}
+.nt-card h3 span{color:var(--acc)}
+.nt-sub{margin:0;font-size:28px;color:var(--ink2);line-height:1.5}
+.nt-card .btn{font-size:30px;padding:18px 44px;margin-top:10px}
+
+/* ===== 7장 kordoc 추가 화면 ===== */
+[data-k="kordoc"] .dict{align-self:stretch;justify-content:center;gap:22px}
+[data-k="kordoc"] .dict .word{font-size:160px}
+[data-k="kordoc"] .kchips span{font-size:23px;padding:9px 20px}
+.dict .def{font-size:30px}
+.kprog{display:flex;gap:10px}
+.kprog span{flex:1;text-align:center;border-radius:999px;padding:9px 10px;font-size:22px;font-weight:800;background:var(--surface2);color:var(--ink3);transition:background-color .25s,color .25s,box-shadow .25s}
+.kprog .p1.on,.kprog .p1.done{background:var(--sky);color:#123d7a}
+.kprog .p2.on,.kprog .p2.done{background:var(--lav);color:#2d2580}
+.kprog .p3.on,.kprog .p3.done{background:var(--mint);color:#0b4d34}
+.kprog span.on{box-shadow:0 0 0 3px var(--acc)}
+.kprog span.done::after{content:" ✓"}
+.kwin{border:1px solid var(--line);border-radius:22px;overflow:hidden;background:#fff;box-shadow:0 24px 60px -30px rgba(8,35,63,.35)}
+.kbar{display:flex;align-items:center;gap:8px;padding:10px 16px;background:var(--surface2);border-bottom:1px solid var(--line)}
+.kbar i{width:12px;height:12px;border-radius:50%;background:var(--line)}
+.kbar span{margin-left:10px;font-family:var(--mono);font-size:16px;color:var(--ink3)}
+.kbody{display:grid;grid-template-columns:190px 1fr;height:430px}
+.kside{border-right:1px solid var(--line);background:#fafbfd;padding:16px 12px;display:flex;flex-direction:column;gap:6px;font-size:19px;color:var(--ink2)}
+.kside span{padding:8px 10px;border-radius:10px}
+.kside .sp{flex:1}
+.kmain{padding:22px 26px;display:flex;flex-direction:column;gap:14px;min-width:0;position:relative}
+.kmain.kcenter{justify-content:center;align-items:center}
+.khello{font-size:30px;font-weight:800;letter-spacing:-.03em}
+.kinput{width:90%;border:1px solid var(--line);border-radius:18px;padding:16px 18px;font-size:19px;color:var(--ink3)}
+.ktitle{font-size:30px;font-weight:900;letter-spacing:-.03em}
+.kmenu{display:flex;flex-direction:column;gap:6px;font-size:22px}
+.kmenu span{padding:10px 14px;border-radius:12px;color:var(--ink2)}
+.ktarget{border:none;text-align:left;font-size:22px;font-weight:800;padding:10px 14px;border-radius:12px;background:transparent;color:var(--ink)}
+.ktarget.hot{animation:hotp 1.4s ease-in-out infinite}
+.ktarget.c1.hot{background:var(--sky)}.ktarget.c2.hot{background:var(--lav)}.ktarget.c3.hot{background:var(--mint)}
+@keyframes hotp{0%,100%{box-shadow:0 0 0 0 rgba(98,90,254,0)}50%{box-shadow:0 0 0 7px rgba(98,90,254,.28)}}
+.kpoint{font-size:21px;font-weight:700;border-radius:999px;padding:6px 16px;width:fit-content}
+.kpoint.c1{background:var(--sky);color:#123d7a}.kpoint.c2{background:var(--lav);color:#2d2580}
+.kcenter .kpoint{position:absolute;left:14px;bottom:18px}
+.ktabs{display:flex;gap:6px}
+.ktabs span{padding:7px 16px;border-radius:999px;font-size:19px;color:var(--ink3);border:1px solid var(--line)}
+.ktabs span.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.ksearch{display:flex;align-items:center;gap:10px;border:1.5px solid var(--acc);border-radius:14px;padding:12px 16px;font-size:22px}
+.ksearch b{font-family:var(--mono);font-weight:500}
+.kres{display:flex;align-items:center;gap:16px;border:1px solid var(--line);border-radius:18px;padding:16px;animation:up .4s both}
+.kic{flex:none;width:56px;height:56px;border-radius:14px;background:#2b6fd6;color:#fff;font-weight:900;font-size:26px;display:grid;place-items:center}
+.kinfo{flex:1;min-width:0}.kinfo b{display:block;font-size:24px}.kinfo small{display:block;font-size:17px;color:var(--ink3)}
+.ktarget.c3{flex:none;background:var(--mint);padding:10px 22px;border-radius:999px}
+.ktarget.added{background:var(--ok);color:#fff;animation:pop .35s cubic-bezier(.3,1.6,.5,1)}
+/* ===== 8장 세 가지 → 팝업 ===== */
+.samec{text-align:left;border:none;border-radius:18px;padding:18px 22px;font-size:23px;line-height:1.5;color:var(--ink2);display:flex;flex-direction:column;gap:2px;cursor:pointer;transition:transform .2s,box-shadow .2s}
+.samec:nth-child(1){background:var(--sky)}.samec:nth-child(2){background:var(--lav)}.samec:nth-child(3){background:var(--mint)}
+.samec b{display:block;color:var(--ink);font-size:29px;letter-spacing:-.03em}
+.samec .more{font-family:var(--mono);font-size:17px;color:var(--ink);margin-top:6px;opacity:.7}
+.samec:hover{transform:translateY(-6px);box-shadow:0 26px 50px -22px rgba(8,35,63,.38)}
+.pop{position:absolute;inset:0;z-index:29;display:grid;place-items:center;background:rgba(8,20,45,.45);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.pop.on{animation:ntBg .3s ease both}
+.pop-card{width:1080px;background:#fff;border-radius:34px;overflow:hidden;box-shadow:0 60px 120px -40px rgba(0,0,0,.55);display:flex;flex-direction:column}
+.pop.on .pop-card{animation:ntPop .5s cubic-bezier(.25,1.4,.5,1) both}
+.pop-top{background:var(--pc);padding:32px 50px 26px}
+.pop-n{font-family:var(--mono);font-size:20px;letter-spacing:.14em;color:var(--ink2)}
+.pop-top h3{font-size:64px;font-weight:900;letter-spacing:-.05em;margin-top:6px}
+.pop-body{padding:30px 50px 10px;font-size:28px;line-height:1.6;color:var(--ink2)}
+.pop-body p{margin:16px 0 0}
+.pop-body b{color:var(--ink)}
+.pop-card>.btn{align-self:flex-start;margin:20px 50px 40px}
+.pflow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.ptool{border-radius:999px;background:var(--surface2);border:1px solid var(--line);padding:10px 20px;font-size:25px;font-weight:800;color:var(--ink)}
+.parr{font-size:44px;color:var(--acc);font-weight:900}
+.psent{font-size:28px;line-height:1.9;color:var(--ink)}
+.psent span{border-radius:8px;padding:3px 8px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.ps1{background:var(--sky)}.ps2{background:var(--lav)}.ps3{background:var(--mint)}
+.plabels{display:flex;gap:12px;margin-top:12px}
+.plabels span{font-family:var(--mono);font-size:19px;border-radius:999px;padding:4px 14px;color:var(--ink)}
+.pchk{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pchk li{background:var(--surface2);border-radius:16px;padding:14px 18px;font-size:26px;font-weight:700;color:var(--ink)}
+.pchk li::before{content:"✓";color:var(--ok);margin-right:10px;font-weight:900}
+/* ===== 9장 양식 틀 ===== */
+.tpls{gap:16px}
+.tpl{padding:16px 16px 18px;gap:8px;align-items:flex-start}
+.tpl .thumb{display:flex;flex-direction:column;gap:6px;width:100%;height:92px;border-radius:10px;background:#fff;border:1px solid var(--line);padding:0 12px 10px;overflow:hidden;margin-bottom:6px}
+.tpl .thumb::before{content:"";display:block;height:16px;margin:0 -12px 6px;background:var(--tc)}
+.tpl .thumb i{display:block;height:7px;border-radius:4px;background:#e8eaf1}
+.tpl .thumb i:nth-child(2){width:80%}.tpl .thumb i:nth-child(3){width:92%}.tpl .thumb i:nth-child(4){width:60%}
+.tpl b{font-size:30px}
+.tpl[aria-pressed="true"]{background:#fff;color:var(--ink);border-color:var(--acc);box-shadow:0 0 0 4px var(--acc-soft),0 20px 40px -24px rgba(8,35,63,.4);transform:translateY(-6px)}
+.tpl[aria-pressed="true"] small{color:var(--ink3)}
+.tcmp .cmp-text{font-size:27px;min-height:4.8em;white-space:pre-line}
+.tpl-att{background:var(--surface2)}
+.tdot{width:30px;height:38px;border-radius:5px 12px 5px 5px;background:var(--sky);flex:none;margin-left:6px}
+.cmp-send.busy{background:var(--ink2);color:#fff;pointer-events:none}
+.cmp-send.okd{background:var(--ok);color:#fff}
+.tprev{display:flex;flex-direction:column;gap:10px;align-self:start;min-width:0}
+.tprev-tag{align-self:flex-start;font-family:var(--mono);font-size:18px;border-radius:999px;padding:5px 14px;background:var(--surface2);color:var(--ink3);transition:background-color .3s,color .3s}
+.tprev-tag.on{background:var(--acc);color:#fff}
+.tprev .mini{min-height:330px;transition:box-shadow .3s}
+.tprev .mini.made{animation:up .45s both;box-shadow:0 0 0 3px var(--acc-soft),0 24px 60px -34px rgba(8,35,63,.35)}
+.skl{height:12px;border-radius:6px;margin:10px 0;background:linear-gradient(90deg,#eef0f6 25%,#f8f9fc 45%,#eef0f6 65%) 0 0/300% 100%;animation:shimmer 1.1s linear infinite}
+
+/* ===== 공통 가상 화면 확장 ===== */
+.kprog .p4.on,.kprog .p4.done{background:var(--peach);color:#7a3a12}
+.kprog .p5.on,.kprog .p5.done{background:var(--pink);color:#8a1838}
+.kprog span{font-size:21px;padding:9px 6px}
+.ktarget.c4.hot{background:var(--peach)}.ktarget.c5.hot{background:var(--pink)}
+.kpoint.c3{background:var(--mint);color:#0b4d34}.kpoint.c4{background:var(--peach);color:#7a3a12}.kpoint.c5{background:var(--pink);color:#8a1838}
+.kpl{position:absolute;left:14px;bottom:18px}
+.krow{display:flex;align-items:center;justify-content:space-between}
+.kbtn{font-size:20px;font-weight:800;border:1px solid var(--line);border-radius:12px;padding:8px 14px}
+.kempty{flex:1;display:grid;place-items:center;color:var(--ink3);font-size:21px;border:2px dashed var(--line);border-radius:16px;min-height:150px}
+.kdrop{align-self:flex-end;display:flex;flex-direction:column;gap:4px;border:1px solid var(--line);border-radius:16px;padding:10px;box-shadow:0 20px 40px -20px rgba(8,35,63,.35);font-size:21px;background:#fff;animation:up .3s both}
+.kdrop span{padding:10px 14px;color:var(--ink2)}
+.kfiles{display:flex;flex-direction:column;gap:10px}
+.kf{display:flex;align-items:center;gap:14px;border:1px solid var(--line);font-family:var(--mono);font-size:20px;font-weight:500}
+.kskill{display:flex;align-items:center;gap:16px;border:1.5px solid var(--ok);border-radius:18px;padding:16px;background:#f3fbf7;animation:up .4s both}
+.kok{font-weight:800;color:#fff;background:var(--ok);border-radius:999px;padding:8px 16px;font-size:19px}
+.ktab{padding:7px 18px;border-radius:999px;font-size:19px}
+.zipcard{display:flex;flex-direction:column;align-items:flex-start;gap:14px}
+.zipcard .zl{font-family:var(--mono);font-size:18px;letter-spacing:.12em;color:var(--acc)}
+.zipcard b{font-size:34px;line-height:1.25;letter-spacing:-.04em}
+.zipcard p{margin:0;font-size:23px;color:var(--ink2)}
+.paybadge{border-radius:18px;padding:16px 20px;background:#fff6e0;border:1.5px solid #f4c34a;font-size:24px;color:#6b4a00}
+.paybadge b{color:#08233f}
+/* ===== 12장 ===== */
+.usteps{display:flex;flex-direction:column;gap:12px}
+.usteps>div{display:flex;gap:18px;align-items:center;border-radius:18px;padding:16px 20px;background:var(--surface);border:1px solid var(--line);transition:background-color .25s,box-shadow .25s,transform .25s;opacity:.6}
+.usteps b{flex:none;font-family:var(--mono);font-size:22px;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--surface2)}
+.usteps span{font-size:27px;font-weight:800;letter-spacing:-.03em;line-height:1.3}
+.usteps small{display:block;font-size:19px;font-weight:500;color:var(--ink3);letter-spacing:0}
+.usteps .u1.on,.usteps .u1.done{background:var(--sky)}.usteps .u2.on,.usteps .u2.done{background:var(--lav)}.usteps .u3.on,.usteps .u3.done{background:var(--mint)}.usteps .u4.on,.usteps .u4.done{background:var(--peach)}
+.usteps>div.on{opacity:1;border-color:transparent;box-shadow:0 0 0 3px var(--acc);transform:translateX(8px)}
+.usteps>div.done{opacity:1;border-color:transparent}
+.usteps>div.done b{background:var(--ok);color:#fff}
+.usteps>div.done b::after{content:"";}
+.kbody.tall{height:640px}
+.uchat{display:flex;flex-direction:column;gap:12px;padding:18px 22px}
+.umode{align-self:center;display:flex;gap:4px;background:var(--surface2);border-radius:999px;padding:5px}
+.umode>span,.umode>button{border-radius:999px;padding:7px 22px;font-size:19px;font-weight:800;color:var(--ink3)}
+.umode>span.on{background:#fff;color:var(--ink);box-shadow:0 2px 6px rgba(8,35,63,.1)}
+.umode .wk{background:var(--sky)!important}
+.ulog{flex:1;display:flex;flex-direction:column;gap:10px;overflow:hidden;justify-content:flex-end}
+.uhello{align-self:center;margin:auto 0;font-size:28px;font-weight:800;letter-spacing:-.03em}
+.ubox{position:relative;border:1.5px solid var(--line);border-radius:22px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;background:#fff}
+.uchips{display:flex;gap:8px;flex-wrap:wrap}
+.uchip{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:5px 12px 5px 6px;background:var(--mint);font-size:17px;font-weight:700;animation:up .3s both}
+.uchip.sk{background:var(--lav);padding:6px 14px}
+.uin{font-size:21px;min-height:30px}
+.uin .ph{color:var(--ink3)}
+.ubar{display:flex;align-items:center;gap:10px}
+.uplus0,.usend0{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;color:var(--ink3);font-size:20px}
+.uplus,.uslash{font-size:19px;padding:7px 14px;border-radius:999px}
+.usend{width:44px;height:44px;border-radius:50%;padding:0;display:grid;place-items:center;font-size:22px;background:var(--line);color:var(--ink3)}
+.usend.hot{background:var(--acc)!important;color:#fff}
+.umenu{position:absolute;left:12px;bottom:calc(100% + 8px);background:#fff;border:1px solid var(--line);border-radius:16px;padding:10px;box-shadow:0 20px 40px -20px rgba(8,35,63,.4);display:flex;flex-direction:column;gap:6px;animation:up .25s both}
+.umenu small{font-family:var(--mono);font-size:15px;color:var(--ink3);padding:0 8px}
+/* ===== 13장 ===== */
+.rules{gap:12px}
+.rule{background:var(--surface);font-size:27px;padding:18px 22px;border-left:10px solid var(--rc)}
+.rule[aria-pressed="true"]{background:var(--rc);border-color:var(--rc)}
+.rule[aria-pressed="true"] .bx{background:var(--ink);border-color:var(--ink)}
+.fixbox{padding:22px 24px 16px}
+.fixlist{display:flex;flex-direction:column;gap:8px;font-size:24px;line-height:1.45}
+.fixlist .fl{background:var(--rc);border-radius:10px;padding:6px 14px;font-weight:700;animation:up .3s both}
+.fixlist .fl::before{content:"- "}
+.fixres{border-radius:22px;padding:18px 22px;background:#f3fbf7;border:1.5px solid var(--ok);display:flex;flex-direction:column;gap:8px;animation:up .4s both}
+.frh{font-size:25px;font-weight:900;color:var(--ok)}
+.frl{display:flex;gap:12px;align-items:center;font-family:var(--mono);font-size:20px;background:#fff;border-left:6px solid var(--rc);border-radius:8px;padding:6px 12px}
+.frl b{color:var(--ok)}
+.frf{font-size:20px;color:var(--ink2)}
+/* ===== 퀴즈 크게 ===== */
+.qwrap{max-width:none;gap:24px}
+.qt{font-size:62px}
+.opts{gap:22px}
+.opts button{min-height:200px;padding:30px 36px;font-size:40px;font-weight:800;letter-spacing:-.03em;line-height:1.3;display:flex;align-items:center;gap:26px;border-radius:28px;border:2px solid var(--line);box-shadow:0 18px 40px -26px rgba(8,35,63,.3)}
+.opts button .ol{flex:none;width:72px;height:72px;border-radius:20px;display:grid;place-items:center;font-family:var(--mono);font-size:34px;font-weight:600;color:var(--ink)}
+.opts button:nth-child(1) .ol{background:var(--sky)}.opts button:nth-child(2) .ol{background:var(--lav)}.opts button:nth-child(3) .ol{background:var(--mint)}.opts button:nth-child(4) .ol{background:var(--peach)}
+.opts button:hover:not(:disabled){transform:translateY(-6px);border-color:var(--acc)}
+.opts button.r .ol{background:var(--ok);color:#fff}.opts button.w .ol{background:var(--no);color:#fff}
+.qexp{font-size:30px}
+/* ===== 마무리 ===== */
+.endsteps{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.endsteps span{border-radius:999px;padding:8px 20px;font-size:23px;font-weight:800}
+.endsteps .e1{background:var(--sky)}.endsteps .e2{background:var(--lav)}.endsteps .e3{background:var(--mint)}
+.endsteps i{font-style:normal;color:var(--ink3);font-size:24px}
+.ends{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-content:start}
+.endc{position:relative;text-align:left;border:1px solid var(--line);background:#fff;border-radius:20px;padding:18px 20px 18px 30px;display:flex;flex-direction:column;gap:6px;overflow:hidden;transition:transform .2s,box-shadow .2s,border-color .2s}
+.endc .ecol{position:absolute;left:0;top:0;bottom:0;width:12px}
+.endc b{font-size:26px;letter-spacing:-.03em;line-height:1.3}
+.endc small{font-family:var(--mono);font-size:16px;color:var(--ink3)}
+.endc:hover{transform:translateY(-6px);box-shadow:0 26px 50px -22px rgba(8,35,63,.38)}
+.endc[aria-pressed="true"]{border-color:var(--acc);box-shadow:0 0 0 4px var(--acc-soft),0 20px 40px -24px rgba(8,35,63,.4);transform:translateY(-4px)}
+.endbox{padding:20px 24px 16px}
+.endatt{background:var(--surface2)}
+.endtext{font-size:27px;line-height:1.7;min-height:7.6em}
+.endtext.flash{animation:up .35s both}
+.phd{background:var(--acc-soft);color:var(--acc);border-radius:8px;padding:1px 6px;font-weight:700}
+
+[data-k="gptadd"] .kbody{height:540px}
+[data-k="gptfix"]{gap:22px}
+[data-k="gptfix"] .rule{padding:14px 20px;font-size:25px}
+[data-k="gptfix"] .fixlist{font-size:22px;gap:6px}
+[data-k="gptfix"] .fixres{padding:14px 20px;gap:6px}
+[data-k="gptfix"] .frl{font-size:21px;padding:8px 14px}
+[data-k="gptfix"] .frh{font-size:28px}
+.endc{padding:22px 22px 22px 32px;min-height:118px}
+.endc b{font-size:28px}
+
+/* ===== 마무리 조합 ===== */
+.endc .echk{position:absolute;right:14px;top:14px;width:30px;height:30px;border-radius:9px;border:2px solid var(--line);display:grid;place-items:center;font-size:17px;font-weight:900;color:transparent;transition:.2s}
+.endc[aria-pressed="true"] .echk{background:var(--acc);border-color:var(--acc);color:#fff}
+.endc b{padding-right:34px}
+.tdot.mix{border-radius:50%;width:38px;height:38px}
+.endtext.dense{font-size:22px;line-height:1.6}
+.sn2{display:inline-grid;place-items:center;width:1.25em;height:1.25em;border-radius:50%;background:var(--ink);color:#fff;font-size:.72em;margin-right:8px;vertical-align:.12em}
+
+/* ===== 마지막: 생성형 AI 원칙 ===== */
+[data-k="tips"]{gap:20px}
+.tipcount{font-family:var(--mono);font-size:22px;letter-spacing:.1em;color:var(--acc)}
+.tipgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.fc{word-break:keep-all;border:none;background:none;padding:0;height:290px;perspective:1400px;cursor:pointer;text-align:left}
+.fc-in{position:relative;display:block;width:100%;height:100%;transition:transform .6s cubic-bezier(.3,.7,.3,1);transform-style:preserve-3d}
+.fc:hover .fc-in{transform:translateY(-6px)}
+.fc.flip .fc-in{transform:rotateY(180deg)}
+.fc.flip:hover .fc-in{transform:rotateY(180deg) translateY(-6px)}
+.fc-f,.fc-b{position:absolute;inset:0;border-radius:24px;-webkit-backface-visibility:hidden;backface-visibility:hidden;display:flex;flex-direction:column;padding:24px 26px;box-shadow:0 18px 40px -26px rgba(8,35,63,.35)}
+.fc-f{background:var(--tcol);justify-content:space-between}
+.fc-f .fn{font-family:var(--mono);font-size:26px;font-weight:600;color:var(--ink2)}
+.fc-f b{font-size:38px;font-weight:900;letter-spacing:-.05em;line-height:1.2;color:var(--ink)}
+.fc-f small{font-family:var(--mono);font-size:16px;color:var(--ink2)}
+.fc-b{background:#fff;border:2px solid var(--tcol);transform:rotateY(180deg);gap:10px}
+.fc-b b{font-size:24px;font-weight:900;letter-spacing:-.03em;color:var(--ink);border-bottom:4px solid var(--tcol);padding-bottom:6px;width:fit-content}
+.fc-b .fd{font-size:20px;line-height:1.5;color:var(--ink2);flex:1}
+.fex{display:flex;flex-direction:column;gap:6px}
+.tex{font-size:18px;font-weight:700;border-radius:10px;padding:5px 10px;background:var(--surface2);color:var(--ink)}
+.tex.bad{background:#fff0f3;color:#a3173f}.tex.good{background:#eefaf3;color:#0b6b43}
+.fc{height:330px}
+.tipgrid,.tipgrid+*{transition:opacity .7s ease,filter .7s ease,transform .7s ease}
+[data-k="tips"] .tiphead{transition:opacity .6s ease}
+[data-k="tips"].fin .tipgrid{opacity:.07;filter:blur(6px);transform:scale(.94);pointer-events:none}
+[data-k="tips"] .eyebrow{transition:opacity .6s ease}
+[data-k="tips"].fin .tiphead,[data-k="tips"].fin .eyebrow{opacity:.15}
+.tipfin{position:absolute;inset:0;z-index:5;border:none;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;cursor:pointer;opacity:0;pointer-events:none;font-family:inherit;color:var(--ink);text-align:center;background:rgba(251,251,253,.88);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:opacity .8s ease}
+.slide.active>.tipfin{animation:none}
+[data-k="tips"].fin .tipfin{opacity:1;pointer-events:auto}
+.tipfin .f1{font-size:72px;font-weight:700;letter-spacing:-.04em;color:var(--ink2);opacity:0;transform:translateY(30px)}
+.tipfin .f2{font-size:148px;font-weight:900;letter-spacing:-.06em;line-height:1.1;opacity:0;transform:translateY(40px);white-space:nowrap;position:relative}
+.tipfin .fdot{display:inline-block;width:.22em;height:.22em;border-radius:50%;background:var(--acc);margin-left:.06em;vertical-align:baseline;opacity:0;transform:translateY(-3em) scale(.4)}
+.tipfin small{margin-top:40px;font-family:var(--mono);font-size:18px;letter-spacing:.1em;color:var(--ink3);opacity:0}
+[data-k="tips"].fin .f1{animation:finUp .8s .5s cubic-bezier(.2,.8,.2,1) forwards}
+[data-k="tips"].fin .f2{animation:finUp .9s 1.1s cubic-bezier(.2,.8,.2,1) forwards}
+[data-k="tips"].fin .fdot{animation:finDot .7s 2.3s cubic-bezier(.3,1.5,.5,1) forwards}
+[data-k="tips"].fin .tipfin small{animation:finFade .6s 3.4s ease forwards}
+@keyframes finUp{to{opacity:1;transform:none}}
+@keyframes finDot{0%{opacity:1;transform:translateY(-3em) scale(.4)}70%{opacity:1;transform:translateY(0) scale(1.25,.8)}100%{opacity:1;transform:none}}
+@keyframes finFade{to{opacity:1}}
+@media (prefers-reduced-motion:reduce){[data-k="tips"].fin .tipfin *{animation:none!important;opacity:1!important;transform:none!important}}
+@media (prefers-reduced-motion:reduce){.pen path{transition:none!important}*{animation:none!important;transition:none!important}}
+</style>
+
+</head><body>
+<div class="stage" id="stage">
+
+<!-- 1 -->
+<section class="slide cover p1" data-k="cover" data-title="표지" data-g="0">
+  <div class="blobs" id="blobs" aria-hidden="true"><i data-d="40"></i><i data-d="22"></i><i data-d="60"></i></div>
+  <div class="left">
+    <div class="eyebrow cover-q">ChatGPT도, Claude도<br>한글 파일은 못 만든다고요?</div>
+    <h1 id="cv-h" tabindex="0" aria-label="hwp 말고, hwpx요. 눌러서 채점해 보세요"><span class="old" id="cv-old">hwp<svg class="pen strike" viewBox="0 0 300 60" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M6 40 C 50 33, 95 37, 140 30 S 230 22, 294 16"/></svg><span class="hint" id="hint1">눌러 보세요</span></span> 말고,<br><span class="new" id="cv-new">hwpx<svg class="pen ring" viewBox="0 0 400 200" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M318 26 C 240 2, 80 6, 34 62 C 2 104, 52 178, 196 182 C 330 186, 398 144, 388 92 C 380 50, 318 22, 250 20"/></svg><span class="hint" id="hint2">한 번 더</span></span>요.</h1>
+    <div class="sub">AI로 학교 한글 양식 채우기</div>
+    <div class="by">교내 교사 연수 · 2026. 11. 9.(월) · 정경원</div>
+  </div>
+</section>
+
+<!-- 2 -->
+<section class="slide p1" data-k="types" data-title="AI가 만드는 파일" data-g="0">
+  <div class="eyebrow">먼저 알아 두기</div>
+  <h2 class="glow">AI가 <span class="key">만들어 주는</span> 파일은?</h2>
+  <div style="display:flex;align-items:center;gap:24px"><button class="btn pulse" id="scan-btn">한 번에 확인</button><span id="scan-say" style="font-size:28px;color:var(--ink2)">카드를 하나씩 눌러 보거나, 한 번에 확인하세요.</span></div>
+  <div class="scanwrap"><div class="types" id="types"></div><i class="scanline" id="scanline"></i></div>
+  <div id="types-after"></div>
+</section>
+
+<!-- 6 -->
+<section class="slide p3" data-k="req" data-title="요청 문장 만들기" data-g="2">
+  <div class="eyebrow">실습 ① 요청 문장 만들기</div>
+  <h2 class="glow" style="font-size:52px">세 가지가 들어가야 <span class="key">한 번에</span> 나옵니다</h2>
+  <p class="lead" style="font-size:27px">상황: 다음 주 <b>학부모 상담주간 가정통신문</b>을 학교 양식으로 만들어요. 줄마다 하나씩 고르세요.</p>
+  <div id="slots" style="display:flex;flex-direction:column;gap:16px"></div>
+  <div class="cmp-sheet" id="cmp" hidden role="dialog" aria-label="완성된 요청">
+    <div class="cmp-head"><span class="cmp-label">완성된 요청 · 이렇게 입력돼요</span><button class="btn line" id="cmp-close" style="font-size:21px;padding:8px 20px">다시 고르기</button></div>
+    <div class="cmp-box">
+      <div class="cmp-att"><span class="fic hwpx" style="width:38px;height:46px;font-size:10px;padding-bottom:5px">HWPX</span><span><b>가정통신문_상담주간.hwpx</b><small>한글 문서 · 24KB</small></span></div>
+      <div class="cmp-text" id="cmp-text"></div>
+      <div class="cmp-bar"><span class="cmp-plus">＋</span><span class="cmp-hint">첨부 1 · 요청 문장 1</span><button class="cmp-send" id="cmp-send" aria-label="보내러 가기"><span>보내러 가기</span><b>↑</b></button></div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 -->
+<section class="slide p3" data-k="send" data-title="보내 보기" data-g="2">
+  <div class="eyebrow">실습 ② 보내 보기</div>
+  <div class="two" style="grid-template-columns:1fr 1.05fr">
+    <div style="display:flex;flex-direction:column;gap:20px;min-height:0">
+      <h2 class="glow" style="font-size:52px">보내면 <span class="key">무슨 일이</span> 생길까요?</h2>
+      <div class="chat" id="chat"></div>
+      <button class="btn pulse" id="send" style="align-self:flex-start">보내기</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px;min-height:0">
+      <div class="vtabs" role="tablist"><button data-v="before" aria-selected="true">보내기 전 양식</button><button data-v="after" aria-selected="false" disabled>받은 파일</button></div>
+      <div class="paper" id="paper"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 -->
+<section class="slide p3" data-k="check" data-title="받은 파일 확인하기" data-g="2">
+  <div class="eyebrow">실습 ③ 받은 파일 확인하기</div>
+  <div class="two" style="grid-template-columns:1.05fr 1fr">
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <h2 class="glow" style="font-size:52px">받았다고 <span class="key">끝이 아닙니다</span></h2>
+      <p class="lead" style="font-size:26px">확인 항목을 하나씩 눌러 보세요. 틀린 곳이 숨어 있어요.</p>
+      <div class="paper" id="paper2"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div class="checks stg" id="checks"></div>
+      <div id="ck-say"></div>
+    </div>
+  </div>
+</section>
+
+<!-- T1 -->
+<section class="slide p2" data-k="twist" data-title="근데… 사실은" data-g="4">
+  <div class="eyebrow">그런데…</div>
+  <div class="twist">
+    <div style="display:flex;flex-direction:column;gap:26px">
+      <h1 class="tw-h"><span class="old" id="tw-old">hwp</span> 말고,<br><span class="new">hwpx</span>요.</h1>
+      <button class="btn pulse" id="tw-btn" style="align-self:flex-start">hwp의 줄 지우기</button>
+      <div class="band" id="tw-band"><div class="tw-say">근데… 사실은 <span class="key">hwp도</span> 돼요.</div><div class="tw-sub">받는 파일은 여전히 <b>.hwpx</b>지만요.</div></div>
+    </div>
+    <div class="demo" style="display:flex;flex-direction:column;gap:16px">
+      <span class="tag">옛날 .hwp 양식을 그대로 넣어 보세요</span>
+      <div class="chat" id="tw-chat"></div>
+      <button class="btn" id="tw-send" style="align-self:flex-start">보내기</button>
+    </div>
+  </div>
+</section>
+
+<!-- T2 -->
+<section class="slide p2" data-k="kordoc" data-title="kordoc 추가하기" data-g="4">
+  <div class="eyebrow">kordoc 추가하기</div>
+  <h2 class="glow" style="font-size:64px">hwp는 <span class="key">kordoc</span>으로!</h2>
+  <div class="two" style="grid-template-columns:1.1fr 1fr">
+    <div class="panel dict">
+      <span class="wm">한글</span>
+      <span class="word">kordoc</span>
+      <hr>
+      <p class="def" style="margin:0">AI가 <b>한글 문서를 읽고 만들게</b> 해 주는 도구.<br>광진구청 주무관이 만들어 공개했다.</p>
+      <div class="kchips"><span tabindex="0" data-tip="옛날 한글 파일도 바꾸지 않고 그대로 넣어요" style="background:var(--sky)">.hwp 읽기</span><span tabindex="0" data-tip="서식은 그대로 두고 파일 형식만 바꿔 줘요" style="background:var(--lav)">hwp → hwpx 바꾸기</span><span tabindex="0" data-tip="명단 한 줄이 문서 한 장. 세 장만 먼저 확인하세요" style="background:var(--mint)">엑셀 명단으로 여러 장</span><span tabindex="0" data-tip="기안문·보고서·계획서·통지·회의록 다섯 가지" style="background:var(--peach)">기안문·보고서 틀</span><span tabindex="0" data-tip="스캔한 사진은 글자를 알아서 읽어요" style="background:var(--pink)">PDF·엑셀·사진도</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+      <div class="kprog" id="kprog"><span class="p1">① 설정</span><span class="p2">② 플러그인</span><span class="p3">③ kordoc 추가</span></div>
+      <div class="kwin"><div class="kbar"><i></i><i></i><i></i><span>Claude</span></div><div class="kbody" id="kbody"></div></div>
+      <div id="k-say"></div>
+    </div>
+  </div>
+</section>
+
+<!-- T3 -->
+<section class="slide p2" data-k="which" data-title="뭘 쓸까?" data-g="4">
+  <div class="eyebrow">그럼 뭘 쓸까?</div>
+  <h2 class="glow" style="font-size:56px">상황을 눌러 보세요</h2>
+  <div class="sits stg" id="sits"></div>
+  <div style="font-size:30px;font-weight:800;margin-top:6px">도구가 바뀌어도 <span class="mk">그대로인 세 가지</span></div>
+  <div class="same stg">
+    <button class="samec" data-p="0"><b>받는 건 .hwpx</b>어느 도구든 돌려주는 파일은 .hwpx예요.<span class="more">눌러서 보기 →</span></button>
+    <button class="samec" data-p="1"><b>양식 + 내용 + 형식</b>요청 문장은 앞에서 만든 그대로 씁니다.<span class="more">눌러서 보기 →</span></button>
+    <button class="samec" data-p="2"><b>받으면 확인</b>날짜·요일, 내용, 개인정보는 선생님이 봅니다.<span class="more">눌러서 보기 →</span></button>
+  </div>
+</section>
+
+<!-- 9 -->
+<section class="slide p1" data-k="tpl" data-title="양식이 없을 때" data-g="3">
+  <div class="eyebrow">더 해 보기 · 양식이 없을 때</div>
+  <h2 class="glow" style="font-size:60px">양식이 없어도 <span class="key">틀</span>이 있어요</h2>
+  <div class="tpls stg" id="tpls"></div>
+  <div class="two" style="grid-template-columns:1.15fr 1fr">
+    <div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+      <div class="cmp-box tcmp">
+        <div class="cmp-att tpl-att"><span class="tdot"></span><span><b id="tpl-name">기안문 틀</b><small>첨부 없이 틀만 써요</small></span></div>
+        <div class="cmp-text" id="tpl-req"></div>
+        <div class="cmp-bar"><button class="btn line" id="tpl-copy" style="font-size:20px;padding:8px 18px">문장 복사</button><span class="cmp-hint" id="tpl-msg"></span><button class="cmp-send ready" id="tpl-make"><span>만들기</span><b>↑</b></button></div>
+      </div>
+      <p style="font-size:21px;color:var(--ink3);margin:0;line-height:1.5">kordoc의 틀 다섯 가지예요. HWPX 스킬에도 공문·보고서·회의록·제안서 틀이 있어요. 학교 원본 양식이 있으면 그걸 첨부하는 편이 더 좋아요.</p>
+    </div>
+    <div class="tprev"><div class="tprev-tag" id="tpl-file">기안문.hwpx</div><div class="mini" id="tpl-mini"></div></div>
+  </div>
+</section>
+
+<!-- G1 -->
+<section class="slide" data-k="gptyes" data-title="GPT로도 돼요" data-g="5">
+  <div class="eyebrow">하나 더…</div>
+  <div class="twist" style="grid-template-columns:1fr 1fr">
+    <div style="display:flex;flex-direction:column;gap:26px">
+      <h1 class="tw-h" style="font-size:118px"><span id="g-a">클로드만</span><br><span id="g-q" style="color:var(--ink3)">될까요?</span></h1>
+      <button class="btn pulse" id="g-btn" style="align-self:flex-start">ChatGPT는요?</button>
+      <div class="band" id="g-band"><div class="tw-say"><span class="key">GPT로도</span> 돼요.</div><div class="tw-sub">단, <b>유료 요금제</b>의 <b>워크(Work) 모드</b>에서만요.</div></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <span class="tag">내 계정은 될까요? 눌러서 확인</span>
+      <div class="plans stg" id="plans"></div>
+    </div>
+  </div>
+</section>
+
+<!-- G2 -->
+<section class="slide" data-k="gptadd" data-title="GPT에 스킬 넣기" data-g="5">
+  <div class="eyebrow">ChatGPT · 유료 요금제</div>
+  <h2 class="glow" style="font-size:64px">GPT에 <span class="key">스킬 넣기</span></h2>
+  <div class="two" style="grid-template-columns:.62fr 1.38fr">
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="panel zipcard">
+        <span class="zl">올릴 파일</span>
+        <span class="fic zip" style="width:96px;height:116px;font-size:18px">ZIP</span>
+        <b>클로드에 올린<br>그 ZIP 그대로</b>
+        <p>압축을 풀지 않고 올려요.</p>
+      </div>
+      <div class="paybadge"><b>유료 요금제</b>에서만 보여요</div>
+      <div id="g-say"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+      <div class="kprog" id="gprog"><span class="p1">① 플러그인</span><span class="p2">② 스킬 탭</span><span class="p3">③ 만들기</span><span class="p4">④ 업로드</span><span class="p5">⑤ ZIP 고르기</span></div>
+      <div class="kwin"><div class="kbar"><i></i><i></i><i></i><span>ChatGPT</span></div><div class="kbody" id="gbody"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- G3 -->
+<section class="slide" data-k="gptuse" data-title="GPT에서 써 보기" data-g="5">
+  <div class="eyebrow">ChatGPT · 워크 모드</div>
+  <div class="two" style="grid-template-columns:.7fr 1.3fr">
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <h2 class="glow" style="font-size:62px">워크 모드에서<br><span class="key">이렇게</span> 씁니다</h2>
+      <div class="usteps" id="usteps">
+        <div class="u1"><b>1</b><span>워크 모드로 바꾸기<small>일반 채팅에는 스킬이 없어요</small></span></div>
+        <div class="u2"><b>2</b><span>/ 누르고 스킬 고르기<small>고르지 않아도 알아서 쓰기도 해요</small></span></div>
+        <div class="u3"><b>3</b><span>양식 + 내용 파일 첨부<small>양식은 .hwpx, 내용은 PDF도 돼요</small></span></div>
+        <div class="u4"><b>4</b><span>한 줄 요청하고 기다리기<small>몇 분 걸릴 수 있어요</small></span></div>
+      </div>
+    </div>
+    <div class="kwin" style="align-self:start"><div class="kbar"><i></i><i></i><i></i><span>ChatGPT</span></div><div class="kbody tall" id="ubody"></div></div>
+  </div>
+</section>
+
+<!-- G4 -->
+<section class="slide" data-k="gptfix" data-title="내 방식대로 고치기" data-g="5">
+  <div class="eyebrow">ChatGPT · 스킬 고치기</div>
+  <h2 class="glow" style="font-size:64px">내 방식대로 <span class="key">말로 고쳐요</span></h2>
+  <p class="lead" style="font-size:27px">결과가 마음에 안 들면 스킬 자체를 고쳐 달라고 하세요. 다음부터는 말하지 않아도 그대로 해요.</p>
+  <div class="two" style="grid-template-columns:.95fr 1.05fr">
+    <div class="rules stg" id="rules"></div>
+    <div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+      <div class="cmp-box fixbox" id="fix-box">
+        <div class="fixlist" id="fix-req"></div>
+        <div class="cmp-bar"><button class="btn line" id="fix-copy" style="font-size:20px;padding:8px 18px">요청 복사</button><span class="cmp-hint" id="fix-msg"></span><button class="cmp-send ready" id="fix-apply"><span>스킬에 반영</span><b>↑</b></button></div>
+      </div>
+      <div class="fixres" id="fix-res" hidden></div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 -->
+<section class="slide p1" data-k="quiz" data-title="확인 퀴즈" data-g="3">
+  <div class="eyebrow">확인 퀴즈</div>
+  <div class="qwrap" id="quiz"></div>
+</section>
+
+<!-- 11 -->
+<section class="slide p4" data-k="end" data-title="오늘 해 볼 것" data-g="3">
+  <div class="eyebrow">마무리</div>
+  <h2 class="glow" style="font-size:64px">오늘, <span class="key">내 양식 하나</span>만 해 보세요</h2>
+  <div class="endsteps"><span class="e1">① 양식 하나 고르기</span><i>→</i><span class="e2">② 양식 + 내용 + 형식</span><i>→</i><span class="e3">③ 열어서 확인</span></div>
+  <div class="two" style="grid-template-columns:1fr 1.05fr">
+    <div style="display:flex;flex-direction:column;gap:12px;min-width:0"><span class="tag">여러 개 고르면 한 문장으로 합쳐져요</span><div class="ends stg" id="ends"></div></div>
+    <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+      <div class="cmp-box endbox">
+        <div class="cmp-att endatt"><span class="tdot" id="end-dot"></span><span><b id="end-title"></b><small id="end-tool"></small></span></div>
+        <div class="endtext" id="end-text"></div>
+        <div class="cmp-bar"><span class="cmp-hint">[ ] 안만 내 내용으로 바꾸세요</span><span id="end-msg" class="cmp-hint" style="flex:none"></span><button class="btn" id="end-copy" style="font-size:22px;padding:10px 26px">문장 복사</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 12 -->
+<section class="slide" data-k="tips" data-title="AI 쓸 때 꼭" data-g="3">
+  <div class="eyebrow">하나만 더 · 어떤 AI를 쓰든</div>
+  <div class="tiphead" style="display:flex;align-items:flex-end;justify-content:space-between;gap:30px">
+    <h2 class="glow" style="font-size:64px">생성형 AI, <span class="key">이것만은 꼭</span></h2>
+    <div style="display:flex;align-items:center;gap:16px"><span id="tip-count" class="tipcount">0 / 8</span><button class="btn line" id="tip-all" style="font-size:22px;padding:10px 24px">모두 뒤집기</button></div>
+  </div>
+  <div class="tipgrid stg" id="tipgrid"></div>
+  <button class="tipfin" id="tipfin" aria-label="카드로 돌아가기"><span class="f1">AI가 시작해도,</span><span class="f2">마침표는 사람이 찍습니다<i class="fdot"></i></span><small>눌러서 카드 다시 보기</small></button>
+</section>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="pop" id="pop" hidden role="dialog" aria-modal="true"><div class="pop-card" id="pop-card"></div></div>
+<div class="notice" id="notice" hidden role="alertdialog" aria-modal="true" aria-labelledby="nt-t">
+  <div class="nt-card">
+    <span class="nt-badge">중요 · 꼭 기억하세요</span>
+    <p class="nt-pre">스킬은 <b>모양</b>을 지켜 줍니다.</p>
+    <h3 id="nt-t">내용이 맞는지는<br><span>선생님이 확인합니다.</span></h3>
+    <p class="nt-sub">날짜와 요일, 장소, 개인정보는 받은 파일을 열어 직접 확인하세요.</p>
+    <button class="btn" id="nt-ok">확인했어요</button>
+  </div>
+</div>
+<div class="chrome" aria-hidden="true"><span class="tl"><i>+</i>HWP 말고, HWPX요.</span><span class="tr"><i>+</i><em id="ch-n" style="font-style:normal"></em></span><span class="bl"><i>+</i><em id="ch-t" style="font-style:normal"></em></span><span class="br"><i>+</i>동신중학교 · 2026. 11. 9.</span><div class="rail"><b id="ch-r"></b></div></div>
+<button class="nav prev" id="prev" aria-label="이전 슬라이드">‹</button>
+<button class="nav next" id="next" aria-label="다음 슬라이드">›</button>
+<div class="foot"><div class="dots" id="dots"></div><button class="tocbtn" id="tocbtn">☰ 목차</button></div>
+<div class="toc" id="toc" hidden><div class="panel" id="tocp"></div></div>
+</div>
+
+<script>
+(function(){
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const stage=$('#stage'), slides=$$('.slide');
+const GC=['var(--acc)','var(--acc)','var(--acc)','var(--acc)','var(--acc)','var(--acc)'];
+let cur=0, timers=[];
+const later=(fn,ms)=>{const t=setTimeout(fn,ms);timers.push(t);return t};
+const clearT=()=>{timers.forEach(clearTimeout);timers=[]};
+const el=(tag,cls,html)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e};
+
+const POPS=[
+  ['var(--sky)','받는 건 .hwpx','<div class="pflow"><span class="ptool">클로드 스킬</span><span class="ptool">kordoc</span><span class="ptool">유료 GPT</span><span class="parr">→</span><span class="fic hwpx" style="width:86px;height:104px;font-size:17px">HWPX</span></div><p>어느 도구를 써도 돌려주는 파일은 <b>.hwpx</b>예요.<br>한글이 없는 컴퓨터에서는 크롬 확장 <b>rhwp</b>로 열 수 있어요.</p>'],
+  ['var(--lav)','양식 + 내용 + 형식','<div class="psent"><span class="ps1">가정통신문_상담주간.hwpx 첨부</span> + <span class="ps2">상담 기간 11월 16일(월)~20일(금), 장소 각 반 교실…</span> + <span class="ps3">hwpx 파일로 만들어 줘</span></div><div class="plabels"><span class="ps1">양식</span><span class="ps2">채울 내용</span><span class="ps3">받을 형식</span></div><p>도구가 바뀌어도 이 세 가지만 들어가면 한 번에 나와요.</p>'],
+  ['var(--mint)','받으면 확인','<ul class="pchk"><li>쪽수와 표 모양이 원본과 같은지</li><li>날짜와 요일이 맞는지</li><li>내가 준 내용 그대로인지</li><li>개인정보가 들어가지 않았는지</li></ul><p>모양은 도구가 지켜 주고, <b>내용은 선생님이 확인</b>해요.</p>']
+];
+function openPop(k){const c=$('#pop-card'),x=POPS[k];c.style.setProperty('--pc',x[0]);c.innerHTML='<div class="pop-top"><span class="pop-n">0'+(k+1)+' / 03</span><h3>'+x[1]+'</h3></div><div class="pop-body">'+x[2]+'</div><button class="btn" id="pop-x">닫기</button>';$('#pop-x').onclick=closePop;const p=$('#pop');p.hidden=false;p.classList.remove('on');void p.offsetWidth;p.classList.add('on')}
+function closePop(){$('#pop').hidden=true}
+function openNotice(){const n=$('#notice');n.hidden=false;n.classList.remove('on');void n.offsetWidth;n.classList.add('on');setTimeout(()=>{const b=$('#nt-ok');b&&b.focus()},300)}
+function closeNotice(){const n=$('#notice');n.hidden=true;n.classList.remove('on')}
+let toastT;
+function toast(html){const t=$('#toast');t.innerHTML=html;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),3000)}
+function busy(btn,label){btn.disabled=true;btn.classList.remove('pulse');btn.classList.add('busy');btn.innerHTML='<span class="spin"></span>'+label}
+function okay(btn,label){btn.classList.remove('busy');btn.classList.add('okay');btn.innerHTML='<span class="chk">✓</span>'+label}
+function resetBtn(btn,label){btn.disabled=false;btn.classList.remove('okay','busy');btn.innerHTML=label;btn.style.display=''}
+function copyText(text,box,msg,btn){
+  const label=btn?btn.textContent:'';
+  const done=()=>{msg.textContent='';toast('<b>✓</b> 복사했습니다. 클로드 입력창에 붙여 넣으세요.');if(btn){okay(btn,'복사됨');setTimeout(()=>resetBtn(btn,label),1600)}};
+  const fb=()=>{const r=document.createRange();r.selectNodeContents(box);const s=getSelection();s.removeAllRanges();s.addRange(r);msg.textContent='선택해 두었어요. Ctrl+C로 복사하세요.'};
+  try{navigator.clipboard.writeText(text).then(done,fb)}catch(e){fb()}
+}
+
+/* ---- 화면 맞춤 ---- */
+function fit(){const s=Math.min(innerWidth/1920,innerHeight/1080);stage.style.transform='translate(-50%,-50%) scale('+s+')'}
+addEventListener('resize',fit);fit();
+const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+if(!reduce&&matchMedia('(pointer:fine)').matches){stage.addEventListener('mousemove',e=>{if(!stage.classList.contains('inv'))return;const r=stage.getBoundingClientRect();const x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;$$('#blobs i').forEach(b=>{const d=+b.dataset.d;b.style.transform='translate('+(x*d)+'px,'+(y*d)+'px)'})})}
+
+/* ---- 슬라이드별 초기화 ---- */
+const init={};
+
+/* 1 표지 */
+init.cover=()=>{
+  const h=$('#cv-h');h.classList.remove('s1','s2');
+  const step=()=>{if(!h.classList.contains('s1'))h.classList.add('s1');else if(!h.classList.contains('s2')){h.classList.add('s2');toast('<b>✓</b> 정답은 <b>.hwpx</b>')}};
+  h.onclick=step;
+  h.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();step()}};
+};
+
+/* 2 파일 종류 + 확장자 */
+const TYPES=[['W','워드','#2b579a',1],['X','엑셀','#217346',1],['P','PPT','#c43e1c',1],['PDF','PDF','#c42b2b',1],['한','한글','#2b6fd6',0]];
+init.types=()=>{
+  const w=$('#types');w.innerHTML='';const after=$('#types-after');after.innerHTML='';
+  const btn=$('#scan-btn'),say=$('#scan-say'),line=$('#scanline');
+  const EX=['가정통신문.docx','성적일람표.xlsx','학부모총회.pptx','안내문.pdf'];
+  resetBtn(btn,'한 번에 확인');btn.classList.add('pulse');say.textContent='카드를 하나씩 눌러 보거나, 한 번에 확인하세요.';line.className='scanline';
+  let split=false,scanning=false;
+  const cards=TYPES.map((t,i)=>{
+    const c=el('button','tcard'+(i===4?' hangul':''),'<span class="big" style="background:'+t[2]+'">'+t[0]+'</span><span class="nm">'+t[1]+'</span><span class="res">눌러서 확인</span><span class="ex"></span>');
+    c.setAttribute('aria-label',t[1]+' 확인');
+    c.onclick=()=>{if(i===4&&c.classList.contains('ready'))return doSplit();if(!scanning)reveal(i)};
+    w.appendChild(c);return c;
+  });
+  function reveal(i){
+    const c=cards[i];if(c.classList.contains('rev'))return;const t=TYPES[i];
+    c.classList.add('rev',t[3]?'ok':'no','hit');
+    $('.res',c).innerHTML=t[3]?'✓ 만들어 줘요':'✕ 못 만들어요';
+    if(t[3])$('.ex',c).textContent='→ '+EX[i];
+    if(cards.every(x=>x.classList.contains('rev')))allDone();
+  }
+  function allDone(){
+    scanning=false;cards[4].classList.add('ready');
+    resetBtn(btn,'한글 카드 열어 보기');btn.classList.add('pulse');
+    say.innerHTML='한글만 <b style="color:var(--no)">✕</b>… 정말 안 될까요? 한글 카드를 눌러 보세요.';
+  }
+  function doSplit(){
+    if(split)return;split=true;btn.style.display='none';
+    const h=cards[4];h.classList.remove('ready');h.classList.add('split');h.onclick=null;
+    h.innerHTML='<div class="half no"><span class="fic hwp">HWP</span><b>.hwp</b><span class="res">✕ 예전 형식<br>그대로는 못 고쳐요</span></div><div class="half yes"><span class="fic hwpx">HWPX</span><b>.hwpx</b><span class="res">✓ 스킬을 더하면<br>빈칸을 채워 줘요</span></div>';
+    say.innerHTML='한글은 <b>두 가지</b>예요. <span class="key" style="font-weight:800">.hwpx</span>라면 돼요.';
+    later(()=>{after.innerHTML='<div class="panel pathpanel"><div style="font-size:26px"><b>.hwp 파일은</b> 한글 프로그램에서 이렇게 바꿔요.</div><div class="menu-path"><span>파일</span><i>›</i><span>다른 이름으로 저장하기</span><i>›</i><span tabindex="0" data-tip="저장 창 아래쪽 파일 형식 목록에서 고릅니다">파일 형식: 한글 표준 문서(*.hwpx)</span><i>›</i><span>저장</span></div><div style="font-size:24px;color:var(--ink3)">그런데 정말 꼭 바꿔야 할까요? 뒤에서 다시 볼게요.</div></div>';toast('<b>✓</b> 받는 파일은 <b>.hwpx</b>')},700);
+  }
+  btn.onclick=()=>{
+    if(cards[4].classList.contains('ready'))return doSplit();
+    const left=cards.map((c,i)=>i).filter(i=>!cards[i].classList.contains('rev'));
+    if(!left.length)return;
+    scanning=true;busy(btn,'확인하는 중');line.classList.remove('go');void line.offsetWidth;line.classList.add('go');
+    left.forEach((i,k)=>later(()=>{scanning=k<left.length-1;reveal(i)},380+i*300));
+  };
+};
+
+/* 6 요청 문장 */
+const SLOTS=[
+  ['① 무엇을 첨부하나요?',[['가정통신문_상담주간.hwpx',1,'좋아요. 원본 양식을 그대로 살릴 수 있어요.'],['아무것도 첨부하지 않음',0,'양식이 없으면 학교 서식과 다른 모양이 나와요.'],['가정통신문_상담주간.pdf',0,'PDF로는 원본 양식을 채울 수 없어요.']]],
+  ['② 무엇을 채워 달라고 하나요?',[['상담 기간 11월 16일(월)~20일(금) 오후 3~5시, 장소 각 반 교실, 대면·전화 중 선택, 회신 11월 13일(금)까지',1,'좋아요. 날짜와 장소를 내가 정해서 줬어요.'],['알아서 그럴듯하게 써 줘',0,'날짜와 장소를 AI가 지어내게 돼요.'],['1학년 3반 김○○ 학생 상담 내용도 넣어 줘',0,'학생 개인정보는 AI에 넣지 않아요.']]],
+  ['③ 어떻게 받나요?',[['표와 서식은 그대로 두고 hwpx 파일로 만들어 줘',1,'좋아요. 받을 파일 형식을 분명히 말했어요.'],['채팅창에 글로 보여 줘',0,'글로 받으면 한글에 다시 옮겨 붙여야 해요.'],['hwp 파일로 만들어 줘',0,'스킬은 .hwp를 만들지 않아요.']]]
+];
+init.req=()=>{
+  const w=$('#slots');w.innerHTML='';const got={};
+  SLOTS.forEach((s,si)=>{
+    const d=el('div','slot','<div class="slot-l"><span class="sn">0'+(si+1)+'</span><h3>'+s[0].slice(2)+'</h3></div><div class="slot-r"><div class="chips"></div><div class="fb"></div></div>');
+    s[1].forEach(o=>{const b=el('button','chip '+(o[1]?'good':'bad'),o[0]);b.setAttribute('aria-pressed','false');
+      b.onclick=()=>{$$('.chip',d).forEach(x=>x.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');
+        const fb=$('.fb',d);fb.className='fb '+(o[1]?'ok':'no');fb.textContent=(o[1]?'✓ ':'✕ ')+o[2];got[si]=o[1];
+        d.classList.toggle('done',o[1]===1);
+        if([0,1,2].every(k=>got[k]===1))later(showCmp,450);
+      };$('.chips',d).appendChild(b)});
+    w.appendChild(d);
+  });
+  const cmp=$('#cmp');cmp.hidden=true;$('#cmp-text').innerHTML='';
+  $('#cmp-close').onclick=()=>{cmp.hidden=true};
+  $('#cmp-send').onclick=()=>go(cur+1);
+};
+const CMP=[['이 양식에 ',''],['상담 기간 11월 16일(월)~20일(금) 오후 3~5시, 장소 각 반 교실, 대면·전화 중 선택, 회신 11월 13일(금)까지','s2'],['를 채워 줘. ',''],['표와 서식은 그대로 두고 hwpx 파일로 만들어 줘.','s3']];
+function showCmp(){
+  const cmp=$('#cmp'),t=$('#cmp-text'),send=$('#cmp-send');
+  cmp.hidden=false;t.innerHTML='';send.classList.remove('ready');
+  const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  if(reduce){t.innerHTML=CMP.map(x=>x[1]?'<span class="'+x[1]+'">'+x[0]+'</span>':x[0]).join('');send.classList.add('ready');return}
+  let seg=0,ch=0,span=null;const caret=el('i','caret');t.appendChild(caret);
+  const tick=()=>{
+    if(seg>=CMP.length){send.classList.add('ready');return}
+    if(ch===0){span=el('span',CMP[seg][1]);t.insertBefore(span,caret)}
+    span.textContent+=CMP[seg][0][ch];ch++;
+    if(ch>=CMP[seg][0].length){seg++;ch=0}
+    later(tick,26);
+  };
+  later(tick,350);
+}
+
+/* 7 보내기 */
+const ROWS=[['상담 기간','11월 16일(월) ~ 11월 20일(금)'],['상담 시간','오후 3시 ~ 5시 (1회 20분)'],['상담 장소','각 반 교실'],['상담 방식','대면 상담 또는 전화 상담 중 선택'],['신청 방법','아래 회신서를 작성하여 11월 13일(금)까지 담임교사에게 제출']];
+function paper(target,mode,override){
+  const after=mode!=='before';
+  let h='<div class="lh"><span class="sch"><span class="logo">교표</span>○○중학교</span><span class="meta">발행일 '+(after?'2026. 11. 10.':'2026. ○○. ○○.')+'<br>담당 1학년부</span></div>';
+  h+='<h4>가 정 통 신 문</h4><p class="s">2026학년도 2학기 학부모 상담주간 안내</p>';
+  h+='<p class="greet">학부모님, 안녕하십니까? 늘 본교 교육 활동에 관심을 가져 주셔서 감사합니다. 2학기 학부모 상담주간을 아래와 같이 운영하오니, 회신서를 작성하여 보내 주시기 바랍니다.</p><table>';
+  ROWS.forEach((r,i)=>{const o=override&&override[i];const v=o?o[0]:(after?r[1]:'○○○○');const cls=o?o[1]:(after?'fill':'blank');h+='<tr><th>'+r[0]+'</th><td class="'+cls+'" data-r="'+i+'">'+v+'</td></tr>'});
+  h+='</table><p class="end">'+(after?'2026. 11. 10.':'2026. ○○. ○○.')+'<br><b>○○중학교장</b></p>';
+  h+='<div class="cut">✂ 자르는 선</div><div class="reply"><div class="rt">회 신 서</div><table><tr><th>학생</th><td>( )학년 ( )반 ( )번 이름:</td></tr><tr><th>희망 방식</th><td><span class="chk">□ 대면 상담 □ 전화 상담</span></td></tr><tr><th>희망 일시</th><td>11월 ( )일 ( )시</td></tr></table></div>';
+  target.innerHTML=h;
+}
+init.send=()=>{
+  const chat=$('#chat'),send=$('#send'),tabs=$$('.vtabs button',$('[data-k="send"]'));
+  chat.innerHTML='<div class="msg me"><div class="att"><span class="fic hwpx" style="width:30px;height:36px;font-size:9px;padding-bottom:3px">HWPX</span>가정통신문_상담주간.hwpx</div><div>이 양식에 상담 기간 11월 16일(월)~20일(금) 오후 3~5시, 장소 각 반 교실, 대면·전화 중 선택, 회신 11월 13일(금)까지를 채워 줘. 표와 서식은 그대로 두고 hwpx 파일로 만들어 줘.</div></div>';
+  resetBtn(send,'보내기');send.classList.add('pulse');
+  const setTab=v=>{tabs.forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v?'true':'false'));paper($('#paper'),v)};
+  tabs.forEach(b=>b.onclick=()=>{if(!b.disabled)setTab(b.dataset.v)});
+  tabs[1].disabled=true;setTab('before');
+  send.onclick=()=>{
+    busy(send,'보내는 중');
+    $$('#paper td[data-r]').forEach(td=>td.classList.add('sk'));
+    const ai=el('div','msg ai','<div class="txt">한글 양식을 확인하고 있어요.</div><div class="log"></div>');chat.appendChild(ai);
+    const L=['hwpx 스킬을 꺼냈어요','양식에서 표와 빈칸을 찾았어요 (5칸)','칸에 내용을 넣었어요','원본과 쪽수·표 모양이 같은지 검사했어요 (1쪽 → 1쪽)'];
+    L.forEach((t,i)=>later(()=>{$('.log',ai).appendChild(el('div','','<span class="y">✓</span> '+t))},600*(i+1)));
+    later(()=>{$('.txt',ai).textContent='표와 서식은 그대로 두고 다섯 칸을 채웠어요.';
+      ai.appendChild(el('div','dl','<span class="fic hwpx" style="width:40px;height:48px;font-size:11px">HWPX</span><span><b>가정통신문_상담주간_완성.hwpx</b><br><span style="font-size:18px;color:var(--ink3)">내려받기</span></span>'));
+      tabs[1].disabled=false;setTab('after');okay(send,'받았어요 <span class="nx">→</span>');send.disabled=false;send.classList.add('go-next');send.onclick=()=>go(cur+1);toast('<b>✓</b> 가정통신문_상담주간_완성.hwpx');
+    },600*(L.length+1));
+  };
+};
+
+/* 8 확인 */
+const CK=[
+  ['파일이 열리나요?','한글이 없는 컴퓨터라면 크롬 웹 스토어에서 "rhwp"를 검색해 확장 프로그램을 설치하면 브라우저에서 열고 고칠 수 있어요.',null,'열렸어요.'],
+  ['쪽수와 표 모양이 원본과 같나요?','한 쪽이던 양식이 두 쪽으로 넘어갔다면 "한 쪽에 맞게 줄여 줘"라고 다시 요청하세요.',null,'1쪽 그대로, 표 모양도 같아요.'],
+  ['날짜와 요일이 맞나요?','달력을 펴고 하나씩 맞춰 보세요.',[0,'11월 16일(화) ~ 11월 20일(금)','11월 16일(월) ~ 11월 20일(금)'],'11월 16일은 <b>월요일</b>이에요. AI가 요일을 틀렸어요.'],
+  ['내가 준 내용 그대로인가요?','AI가 그럴듯한 말로 바꿔 넣는 경우가 있어요.',[2,'학교 강당','각 반 교실'],'장소를 <b>각 반 교실</b>이라고 했는데 <b>강당</b>으로 바뀌어 있었어요.'],
+  ['개인정보가 들어가지 않았나요?','학생 이름, 연락처, 상담 내용은 받은 파일에 직접 입력하세요.',null,'개인정보는 없어요.']
+];
+init.check=()=>{
+  const ov={0:['11월 16일(화) ~ 11월 20일(금)','fill'],2:['학교 강당','fill']};
+  paper($('#paper2'),'after',ov);
+  const w=$('#checks');w.innerHTML='';$('#ck-say').innerHTML='';let n=0;
+  CK.forEach((c,i)=>{
+    const b=el('button','ck','<span class="bx"></span><span><span class="ht">'+c[0]+'</span><small>'+c[1]+'</small></span>');
+    b.onclick=()=>{if(b.dataset.d)return;b.dataset.d=1;n++;
+      if(c[2]){const td=$('#paper2 td[data-r="'+c[2][0]+'"]');td.className='err';b.classList.add('found');$('.bx',b).textContent='!';$('small',b).innerHTML=c[3]+' <button class="btn" style="font-size:20px;padding:6px 16px;margin-left:8px">고치기</button>';
+        $('small .btn',b).onclick=e=>{e.stopPropagation();td.className='fixed';td.textContent=c[2][2];b.classList.remove('found');b.classList.add('done');$('.bx',b).textContent='✓';$('small',b).innerHTML='고쳤어요.'}}
+      else{b.classList.add('done');$('.bx',b).textContent='✓';$('small',b).innerHTML=c[3]}
+      if(n===CK.length){$('#ck-say').innerHTML='<button class="btn line" id="ck-again" style="font-size:22px">공지 다시 보기</button>';$('#ck-again').onclick=openNotice;later(openNotice,500)}
+    };
+    w.appendChild(b);
+  });
+};
+
+/* 반전 */
+init.twist=()=>{
+  const old=$('#tw-old'),b=$('#tw-btn'),band=$('#tw-band');
+  old.classList.remove('alive');band.classList.remove('on');b.style.display='';b.classList.add('pulse');
+  b.onclick=()=>{old.classList.add('alive');band.classList.add('on');b.style.display='none'};
+  const chat=$('#tw-chat'),send=$('#tw-send');
+  chat.innerHTML='<div class="msg me"><div class="att"><span class="fic hwp" style="width:30px;height:36px;font-size:9px;padding-bottom:3px">HWP</span>2019_방과후학교_신청서.hwp</div><div>이 신청서 양식에 2026학년도 겨울방학 일정을 채워 줘. 기간은 2027년 1월 4일(월)~22일(금)이야. hwpx 파일로 만들어 줘.</div></div>';
+  resetBtn(send,'보내기');send.classList.add('pulse');
+  send.onclick=()=>{
+    busy(send,'보내는 중');
+    const ai=el('div','msg ai','<div class="txt">옛날 한글 파일이네요. 확인해 볼게요.</div><div class="log"></div>');chat.appendChild(ai);
+    const L=['kordoc을 꺼냈어요','.hwp 파일을 읽었어요','서식 그대로 .hwpx로 바꿨어요','빈칸에 일정을 넣었어요'];
+    L.forEach((t,i)=>later(()=>$('.log',ai).appendChild(el('div','','<span class="y">✓</span> '+t)),600*(i+1)));
+    later(()=>{$('.txt',ai).textContent='서식은 그대로 두고 일정을 채웠어요.';
+      ai.appendChild(el('div','dl','<span class="fic hwpx" style="width:40px;height:48px;font-size:11px">HWPX</span><span><b>2026_방과후학교_신청서.hwpx</b><br><span style="font-size:18px;color:var(--ink3)">내려받기</span></span>'));
+      okay(send,'받았어요');send.disabled=false;send.classList.add('go-next');toast('<b>.hwp</b> 넣고 <b>.hwpx</b> 받았어요');
+      send.onclick=()=>{const f=$('.log div',ai);if(f){f.classList.remove('emph');void f.offsetWidth;f.classList.add('emph')}};
+    },600*(L.length+1));
+  };
+};
+
+/* kordoc 추가하기 */
+init.kordoc=()=>{
+  const body=$('#kbody'),say=$('#k-say'),prog=$('#kprog');let st=0;
+  const setProg=()=>$$('span',prog).forEach((x,k)=>{x.classList.toggle('on',k===st);x.classList.toggle('done',k<st)});
+  const side=(hl)=>'<div class="kside"><span>＋ 새 채팅</span><span>채팅 목록</span><span>프로젝트</span><span class="sp"></span><button class="ktarget c1'+(hl?' hot':'')+'" id="k-set">⚙ 설정</button></div>';
+  const T={
+    0:()=>side(1)+'<div class="kmain kcenter"><div class="khello">무엇을 도와드릴까요?</div><div class="kinput">메시지를 입력하세요</div><div class="kpoint c1">← 왼쪽 아래 <b>설정</b>을 눌러요</div></div>',
+    1:()=>side(0)+'<div class="kmain"><div class="ktitle">설정</div><div class="kmenu"><span>일반</span><span>계정</span><button class="ktarget c2 hot" id="k-plug">🧩 플러그인</button><span>개인정보</span></div><div class="kpoint c2">플러그인을 눌러요</div></div>',
+    2:()=>side(0)+'<div class="kmain"><div class="ktitle">플러그인</div><div class="ktabs"><span>설치됨</span><span class="on">마켓플레이스</span></div><div class="ksearch"><span>🔍</span><b id="k-q"></b><i class="caret"></i></div><div class="kres" id="k-res" hidden><span class="kic">한</span><span class="kinfo"><b>kordoc</b><small>한글 문서를 AI가 읽고 만들게 해 주는 도구</small></span><button class="ktarget c3 hot" id="k-add">추가</button></div></div>'
+  };
+  function render(){
+    setProg();body.innerHTML=T[st]();
+    if(st===0)$('#k-set').onclick=()=>{st=1;render()};
+    if(st===1)$('#k-plug').onclick=()=>{st=2;render()};
+    if(st===2){const q='kordoc';let k=0;const tick=()=>{if(k<q.length){$('#k-q').textContent+=q[k++];later(tick,110)}else{$('#k-res').hidden=false}};later(tick,300);
+      $('#k-add').onclick=e=>{const b=e.currentTarget;b.classList.remove('hot');b.classList.add('added');b.textContent='✓ 추가됨';st=3;setProg();toast('<b>✓</b> kordoc을 추가했어요');say.innerHTML='<div class="say ok">끝! 실제 설치는 연수 시간에 함께 해요.</div>'};}
+  }
+  say.innerHTML='';render();
+};
+
+/* 뭘 쓸까 */
+const SIT=[
+  ['가진 양식이 옛날 .hwp 파일이에요','<span class="pill k">kordoc</span>바로 넣으면 .hwpx로 바꿔서 채워 줘요.'],
+  ['.hwpx 양식 하나에 내용만 채우면 돼요','<span class="pill h">HWPX 스킬</span><span class="pill k">kordoc</span>둘 다 돼요. 편한 쪽을 쓰세요.'],
+  ['명단 30명으로 수료증 30장이 필요해요','<span class="pill k">kordoc</span>엑셀 명단을 같이 주면 한 번에 만들어요. 세 장만 먼저 확인하세요.'],
+  ['학교 양식 없이 기안문을 새로 써요','<span class="pill k">kordoc</span>기안문 틀이 있어요. HWPX 스킬에도 공문 틀이 있어요.']
+];
+init.which=()=>{
+  const w=$('#sits');w.innerHTML='';
+  SIT.forEach((x,i)=>{const b=el('button','sit','<span>'+x[0]+'</span>'+(i===0?'<span class="bigmark"><span>.hwp</span><span>→</span><span>.hwpx</span></span>':'')+'<span class="ans">눌러서 확인</span>');
+    b.onclick=()=>{b.classList.add('on');$('.ans',b).innerHTML=x[1]};w.appendChild(b)});
+  $$('.samec').forEach(b=>b.onclick=()=>openPop(+b.dataset.p));
+};
+
+
+/* 9 기본 양식 */
+const TPL=[
+  ['기안문','결재 올리는 문서',"기안문 틀로 hwpx 파일 만들어 줘.\n제목: 2026학년도 겨울방학 방과후학교 운영 계획\n붙임: 운영 계획서 1부",'<div class="t">○○중학교</div><div style="font-size:15px">수신 / (경유) / 제목</div><div class="ln"></div><div class="ln" style="width:80%"></div><div class="ln" style="width:60%"></div><div style="margin-top:12px;font-size:15px">붙임 1. ○○○ 1부. 끝.</div>'],
+  ['보고서','결과 보고',"보고서 틀로 hwpx 파일 만들어 줘.\n제목: 2학기 독서 행사 결과 보고\n항목: 개요, 운영 내용, 성과, 개선점",'<div class="t">독서 행사 결과 보고</div><div style="font-weight:800">1. 개요</div><div class="ln"></div><div style="font-weight:800">2. 운영 내용</div><div class="ln"></div><div class="ln" style="width:70%"></div><div style="font-weight:800">3. 성과 및 개선점</div><div class="ln" style="width:85%"></div>'],
+  ['계획서','행사·사업 계획',"계획서 틀로 hwpx 파일 만들어 줘.\n제목: 2027학년도 AI 동아리 운영 계획\n항목: 목적, 방침, 세부 일정, 예산",'<div class="t">AI 동아리 운영 계획</div><div style="font-weight:800">1. 목적</div><div class="ln"></div><div style="font-weight:800">2. 방침</div><div class="ln" style="width:80%"></div><div style="font-weight:800">3. 세부 일정</div><div class="tb"><div>월</div><div>내용</div><div></div><div></div></div>'],
+  ['통지','알림·안내문',"통지 틀로 hwpx 파일 만들어 줘.\n제목: 겨울방학 중 학교 시설 개방 안내\n내용: 개방 일시, 이용 장소, 유의 사항",'<div class="t">알 림</div><div class="ln"></div><div class="ln" style="width:90%"></div><div class="tb"><div>일시</div><div></div><div>장소</div><div></div><div>유의 사항</div><div></div></div>'],
+  ['회의록','협의회·위원회',"회의록 틀로 hwpx 파일 만들어 줘.\n회의명: 1학년 학년협의회\n안건: 학부모 상담주간 운영",'<div class="t">회 의 록</div><div class="tb"><div>회의명</div><div></div><div>일시</div><div></div><div>참석자</div><div></div><div>안건</div><div></div><div>결정 사항</div><div></div></div>']
+];
+const TCOL=['var(--sky)','var(--lav)','var(--mint)','var(--peach)','var(--pink)'];
+const SKEL='<div class="t"><span class="skl" style="width:46%;height:22px;display:inline-block"></span></div><div class="skl"></div><div class="skl" style="width:84%"></div><div class="skl" style="width:68%"></div><div class="skl" style="width:90%;margin-top:18px"></div><div class="skl" style="width:74%"></div><div class="skl" style="width:52%"></div>';
+init.tpl=()=>{
+  const w=$('#tpls');w.innerHTML='';$('#tpl-msg').textContent='';let cur9=0;
+  const make=$('#tpl-make');
+  function type(txt){const t=$('#tpl-req');t.innerHTML='';const caret=el('i','caret');const sp=el('span');t.appendChild(sp);t.appendChild(caret);
+    if(matchMedia('(prefers-reduced-motion:reduce)').matches){sp.textContent=txt;return}
+    let k=0;const tick=()=>{if(k<txt.length){sp.textContent+=txt[k++];later(tick,22)}};later(tick,150)}
+  function sel(i){
+    cur9=i;clearT();$$('.tpl',w).forEach((b,k)=>b.setAttribute('aria-pressed',k===i?'true':'false'));
+    $('#tpl-name').textContent=TPL[i][0]+' 틀';$('.tdot').style.background=TCOL[i];
+    $('#tpl-file').textContent=TPL[i][0]+'.hwpx';$('#tpl-file').classList.remove('on');
+    $('#tpl-mini').innerHTML=SKEL;$('#tpl-mini').classList.remove('made');$('#tpl-msg').textContent='';
+    resetBtn(make,'<span>만들기</span><b>↑</b>');make.className='cmp-send ready';
+    type(TPL[i][2]);
+  }
+  TPL.forEach((t,i)=>{const b=el('button','tpl','<span class="thumb" style="--tc:'+TCOL[i]+'"><i></i><i></i><i></i><i></i></span><b>'+t[0]+'</b><small>'+t[1]+'</small>');b.onclick=()=>sel(i);w.appendChild(b)});
+  make.onclick=()=>{make.className='cmp-send busy';make.innerHTML='<span>만드는 중</span><b><span class="spin" style="margin:0;width:20px;height:20px"></span></b>';
+    later(()=>{$('#tpl-mini').innerHTML=TPL[cur9][3];$('#tpl-mini').classList.add('made');$('#tpl-file').classList.add('on');make.className='cmp-send okd';make.innerHTML='<span>✓ 만들었어요</span><b>↓</b>';toast('<b>✓</b> '+TPL[cur9][0]+'.hwpx')},1300)};
+  $('#tpl-copy').onclick=e=>copyText(TPL[cur9][2],$('#tpl-req'),$('#tpl-msg'),e.currentTarget);
+  sel(0);
+};
+
+
+/* GPT로도 */
+const PLANS=[
+  ['n','✕','무료','스킬과 워크 모드가 없어요.'],
+  ['m','△','개인 유료 (Plus · Pro)','워크 모드에서 스킬이 보이는지 내 계정에서 먼저 확인하세요.'],
+  ['y','✓','학교·기관 유료 (Business · Edu)','스킬을 공식 지원하는 요금제예요.']
+];
+init.gptyes=()=>{
+  const q=$('#g-q'),b=$('#g-btn'),band=$('#g-band');
+  q.textContent='될까요?';q.style.color='var(--ink3)';$('#g-a').textContent='클로드만';band.classList.remove('on');b.style.display='';b.classList.add('pulse');
+  b.onclick=()=>{$('#g-a').textContent='클로드만?';q.textContent='아니에요.';q.style.color='var(--acc)';q.classList.remove('alive');void q.offsetWidth;q.classList.add('alive');band.classList.add('on');b.style.display='none'};
+  const w=$('#plans');w.innerHTML='';
+  PLANS.forEach(p=>{const c=el('button','plan','<span class="mk2">?</span><span><b>'+p[2]+'</b><small>눌러서 확인</small></span>');
+    c.onclick=()=>{c.className='plan on '+p[0];$('.mk2',c).textContent=p[1];$('small',c).textContent=p[3]};w.appendChild(c)});
+};
+/* GPT에 스킬 넣기 */
+function stepProg(prog,st){$$('span',prog).forEach((x,k)=>{x.classList.toggle('on',k===st);x.classList.toggle('done',k<st)})}
+init.gptadd=()=>{
+  const body=$('#gbody'),say=$('#g-say'),prog=$('#gprog');let st=0;say.innerHTML='';
+  const side=hl=>'<div class="kside"><span>＋ 새 채팅</span><span>검색</span><button class="ktarget c1'+(hl?' hot':'')+'" id="g-plug">🧩 플러그인</button><span>채팅 목록</span><span class="sp"></span><span>내 계정</span></div>';
+  const V={
+    0:()=>side(1)+'<div class="kmain kcenter"><div class="khello">무엇을 도와드릴까요?</div><div class="kinput">무엇이든 물어보세요</div><div class="kpoint c1 kpl">← 왼쪽 <b>플러그인</b>을 눌러요</div></div>',
+    1:()=>side(0)+'<div class="kmain"><div class="ktitle">플러그인</div><div class="ktabs"><span>앱</span><button class="ktarget c2 hot ktab" id="g-tab">스킬</button></div><div class="kempty">앱과 스킬을 둘러보세요</div><div class="kpoint c2">위쪽 <b>스킬</b> 탭을 눌러요</div></div>',
+    2:()=>side(0)+'<div class="kmain"><div class="krow"><div class="ktitle">스킬</div><button class="ktarget c3 hot" id="g-new">＋ 만들기</button></div><div class="kempty">아직 스킬이 없어요</div><div class="kpoint c3">오른쪽 위 <b>만들기</b>를 눌러요</div></div>',
+    3:()=>side(0)+'<div class="kmain"><div class="krow"><div class="ktitle">스킬</div><span class="kbtn">＋ 만들기</span></div><div class="kdrop"><span>채팅으로 만들기</span><span>편집기로 만들기</span><button class="ktarget c4 hot" id="g-up">컴퓨터에서 업로드</button></div><div class="kpoint c4">컴퓨터에서 업로드</div></div>',
+    4:()=>side(0)+'<div class="kmain"><div class="ktitle">파일 고르기</div><div class="kfiles"><button class="ktarget kf c5 hot" id="g-zip"><span class="fic zip" style="width:40px;height:48px;font-size:11px">ZIP</span>hwpxskill-main.zip</button><button class="ktarget kf" id="g-fold">📁 hwpxskill-main (압축 푼 폴더)</button></div><div class="kpoint c5">ZIP 파일을 골라요</div></div>',
+    5:()=>side(0)+'<div class="kmain"><div class="krow"><div class="ktitle">스킬</div><span class="kbtn">＋ 만들기</span></div><div class="kskill"><span class="kic">한</span><span class="kinfo"><b>HWPX 스킬</b><small>한글 HWPX 문서 만들기·읽기·고치기</small></span><span class="kok">✓ 설치됨</span></div></div>'
+  };
+  function render(){stepProg(prog,st);body.innerHTML=V[st]();
+    const on=(id,fn)=>{const e=$('#'+id);if(e)e.onclick=fn};
+    on('g-plug',()=>{if(st===0){st=1;render()}});on('g-tab',()=>{st=2;render()});on('g-new',()=>{st=3;render()});on('g-up',()=>{st=4;render()});
+    on('g-fold',()=>{say.innerHTML='<div class="say no">압축 푼 폴더 말고 <b>ZIP 파일 그대로</b> 올려요.</div>'});
+    on('g-zip',()=>{st=5;render();toast('<b>✓</b> GPT에 스킬을 넣었어요');say.innerHTML='<div class="say ok">끝! 이제 워크 모드에서 쓸 수 있어요.</div>'});
+  }
+  render();
+};
+
+/* GPT에서 써 보기 */
+init.gptuse=()=>{
+  const body=$('#ubody'),list=$('#usteps');let st=0,skill=false,files=false;
+  const mark=()=>$$('#usteps>div').forEach((x,k)=>{x.classList.toggle('on',k===st);x.classList.toggle('done',k<st)});
+  const REQ='이 PDF를 읽고 보고서 양식의 칸을 채워서 완성 파일로 만들어 줘.';
+  function render(){
+    mark();
+    const work=st>=1;
+    let h='<div class="kside"><span>＋ 새 채팅</span><span>검색</span><span>플러그인</span><span>채팅 목록</span><span class="sp"></span></div><div class="kmain uchat">';
+    h+='<div class="umode"><span class="'+(work?'':'on')+'">채팅</span>'+(work?'<span class="on wk">워크</span>':'<button class="ktarget c1 hot um" id="u-work">워크</button>')+'</div>';
+    h+='<div class="ulog" id="u-log">'+(work?'<div class="uhello">워크 모드로 시작해요</div>':'<div class="uhello">무엇을 도와드릴까요?</div>')+'</div>';
+    h+='<div class="ubox"><div class="uchips" id="u-chips">'+(skill?'<span class="uchip sk">⚡ HWPX 스킬</span>':'')+(files?'<span class="uchip"><span class="fic hwpx" style="width:26px;height:32px;font-size:7px;padding-bottom:2px">HWPX</span>결과보고서_양식.hwpx</span><span class="uchip"><span class="fic pdf" style="width:26px;height:32px;font-size:7px;padding-bottom:2px">PDF</span>2학기_독서행사_계획서.pdf</span>':'')+'</div>';
+    h+='<div class="uin" id="u-in">'+(st>=3?'<span id="u-typed"></span><i class="caret"></i>':'<span class="ph">'+(st===1?'/ 를 눌러 스킬을 불러와요':'메시지를 입력하세요')+'</span>')+'</div>';
+    h+='<div class="ubar">'+(st===2?'<button class="ktarget c3 hot uplus" id="u-att">＋ 파일</button>':'<span class="uplus0">＋</span>')+(st===1?'<button class="ktarget c2 hot uslash" id="u-slash">/ 스킬</button>':'')+'<span style="flex:1"></span>'+(st===3?'<button class="ktarget c4 usend" id="u-send" disabled>↑</button>':'<span class="usend0">↑</span>')+'</div>';
+    h+='<div class="umenu" id="u-menu" hidden><small>스킬</small><button class="ktarget c2 hot" id="u-pick">⚡ HWPX 스킬</button></div></div></div>';
+    body.innerHTML=h;
+    const on=(id,fn)=>{const e=$('#'+id);if(e)e.onclick=fn};
+    on('u-work',()=>{st=1;render()});
+    on('u-slash',()=>{$('#u-menu').hidden=false;$('#u-slash').classList.remove('hot')});
+    on('u-pick',()=>{skill=true;st=2;render()});
+    on('u-att',()=>{files=true;st=3;render();typeReq()});
+  }
+  function typeReq(){const t=$('#u-typed');let k=0;const tick=()=>{if(k<REQ.length){t.textContent+=REQ[k++];later(tick,24)}else{const b=$('#u-send');b.disabled=false;b.classList.add('hot');b.onclick=sendIt}};later(tick,250)}
+  function sendIt(){
+    st=4;mark();const log=$('#u-log');$('#u-in').innerHTML='<span class="ph">메시지를 입력하세요</span>';$('#u-chips').innerHTML='';const b=$('#u-send');b.classList.remove('hot');b.disabled=true;
+    log.innerHTML='<div class="msg me" style="font-size:19px">'+REQ+'</div>';
+    const ai=el('div','msg ai','<div class="txt" style="font-size:19px">스킬을 쓰고 있어요. 몇 분 걸릴 수 있어요.</div><div class="log" style="font-size:16px"></div>');log.appendChild(ai);
+    const L=['HWPX 스킬을 불러왔어요','PDF 내용을 읽었어요','양식의 칸을 채우고 검사했어요'];
+    L.forEach((t,i)=>later(()=>$('.log',ai).appendChild(el('div','','<span class="y">✓</span> '+t)),600*(i+1)));
+    later(()=>{$('.txt',ai).textContent='양식은 그대로 두고 내용을 채웠어요.';ai.appendChild(el('div','dl','<span class="fic hwpx" style="width:34px;height:42px;font-size:9px">HWPX</span><span><b style="font-size:18px">결과보고서_완성.hwpx</b></span>'));toast('<b>✓</b> 결과보고서_완성.hwpx')},600*(L.length+1));
+  }
+  render();
+};
+
+/* 내 방식대로 고치기 */
+const RULES=[['따로 말하지 않으면 개조식으로 쓰기','var(--sky)'],['오류를 찾으면 고친 뒤 정상 파일만 주기','var(--lav)'],['양식의 쪽수를 넘기지 않기','var(--mint)'],['날짜에는 요일을 꼭 붙이기','var(--peach)'],['모르는 내용은 지어내지 말고 비워 두기','var(--pink)']];
+init.gptfix=()=>{
+  const w=$('#rules');w.innerHTML='';const on=new Set([0,1]);$('#fix-msg').textContent='';const res=$('#fix-res');res.hidden=true;res.innerHTML='';$('#fix-box').hidden=false;
+  const apply=$('#fix-apply');resetBtn(apply,'<span>스킬에 반영</span><b>↑</b>');apply.className='cmp-send ready';
+  const text=()=>'지금 쓰는 HWPX 스킬을 다음과 같이 고쳐 줘.\n'+[...on].sort().map(i=>'- '+RULES[i][0]).join('\n')+'\n기존 기능은 그대로 두고 이 내용만 더해 줘.';
+  const draw=()=>{$('#fix-req').innerHTML='<div class="fl0">지금 쓰는 HWPX 스킬을 다음과 같이 고쳐 줘.</div>'+(on.size?[...on].sort().map(i=>'<div class="fl" style="--rc:'+RULES[i][1]+'">'+RULES[i][0]+'</div>').join(''):'<div class="fl0" style="color:var(--ink3)">왼쪽에서 규칙을 골라 주세요</div>')+'<div class="fl0">기존 기능은 그대로 두고 이 내용만 더해 줘.</div>';res.hidden=true;$('#fix-box').hidden=false;apply.className='cmp-send ready';apply.innerHTML='<span>스킬에 반영</span><b>↑</b>'};
+  RULES.forEach((r,i)=>{const b=el('button','rule','<span class="bx">✓</span><span>'+r[0]+'</span>');b.style.setProperty('--rc',r[1]);b.setAttribute('aria-pressed',on.has(i)?'true':'false');
+    b.onclick=()=>{on.has(i)?on.delete(i):on.add(i);b.setAttribute('aria-pressed',on.has(i)?'true':'false');draw()};w.appendChild(b)});
+  draw();
+  $('#fix-copy').onclick=e=>copyText(text(),$('#fix-req'),$('#fix-msg'),e.currentTarget);
+  apply.onclick=()=>{if(!on.size)return;apply.className='cmp-send busy';apply.innerHTML='<span>고치는 중</span><b><span class="spin" style="margin:0;width:20px;height:20px"></span></b>';
+    later(()=>{res.hidden=false;res.innerHTML='<div class="frh">✓ HWPX 스킬이 업데이트됐어요</div>'+[...on].sort().map(i=>'<div class="frl" style="--rc:'+RULES[i][1]+'"><b>+</b>'+RULES[i][0]+'</div>').join('')+'<div class="frf">다음부터는 말하지 않아도 이대로 해요.</div><button class="btn line" id="fix-again" style="align-self:flex-start;font-size:20px;padding:8px 18px;margin-top:6px">규칙 다시 고르기</button>';$('#fix-box').hidden=true;$('#fix-again').onclick=()=>{res.hidden=true;$('#fix-box').hidden=false};apply.className='cmp-send okd';apply.innerHTML='<span>✓ 반영됐어요</span><b>✓</b>';toast('<b>✓</b> 스킬을 고쳤어요')},1300)};
+};
+
+
+/* 마지막: 생성형 AI 원칙 */
+const TIPS=[
+  ['한 번에 되지 않아요','딸깍은 시작일 뿐이에요. 결과를 보고, 고칠 곳을 말하고, 다시 받아요.',['1차 결과 받기','→ "표를 한 쪽에 맞춰 줘"','→ 2차 결과']],
+  ['프롬프트에 정답은 없어요','남의 프롬프트를 외우기보다, 결과를 보고 내 말로 고쳐 가는 게 실력이에요.',['좋은 문장 = 내 결과에 맞게 고친 문장']],
+  ['역할 부여는 큰 의미 없어요','"너는 20년 차 베테랑 교사야"를 붙여도 결과는 거의 같아요. 그 자리에 더 쓸 말이 있어요.',['✕ 너는 최고의 국어 교사야']],
+  ['역할보다 대상을 말해요','누가 읽을지를 말하면 낱말, 길이, 예시가 바뀌어요.',['✓ 중학교 1학년이 읽을 수 있게','✓ 학부모님께 보내는 안내문으로']],
+  ['맥락 한 줄이 결과를 바꿔요','AI는 가장 그럴듯한 평균을 줘요. 우리 반은 평균이 아니에요.',['+ 우리 학교는 6교시가 15:30에 끝나요','+ 다문화 학생이 3명 있어요']],
+  ['정확한 이름으로 말해요','이름을 알면, 나도 AI도 같은 것을 떠올려요. 무엇을 + 어떻게 + 언제.',['✕ 예쁘게 해 줘','✓ 표 머리행을 연한 회색으로']],
+  ['자신 있게 틀려요','말투가 공손하고 형식이 깔끔해도 틀릴 수 있어요. 사실, 맥락, 의도 순서로 확인하고, 모르는 건 비워 두라고 하세요.',['사실 · 맥락 · 의도','"출처를 달고, 모르면 비워 둬"']],
+  ['개인정보는 넣지 않아요','학생 이름, 연락처, 상담 내용은 AI에 넣지 않아요. 받은 파일에 내가 직접 넣어요.',['✕ 1학년 3반 김○○ 상담 내용','✓ [학생 이름] 칸은 비워 둬']]
+];
+const TIPC=['var(--sky)','var(--peach)','var(--lav)','#fff0b3','var(--mint)','#f2d5f8','#e2f1c2','var(--pink)'];
+init.tips=()=>{
+  const g=$('#tipgrid');g.innerHTML='';const cnt=$('#tip-count'),sl=$('[data-k="tips"]'),fin=$('#tipfin');sl.classList.remove('fin');let n=0,shown=false;
+  fin.onclick=()=>sl.classList.remove('fin');
+  const upd=()=>{cnt.textContent=n+' / '+TIPS.length;if(n===TIPS.length&&!shown){shown=true;later(()=>sl.classList.add('fin'),1600)}};
+  TIPS.forEach((t,i)=>{
+    const ex=t[2].map(x=>'<span class="tex'+(x.startsWith('✕')?' bad':x.startsWith('✓')?' good':'')+'">'+x+'</span>').join('');
+    const c=el('button','fc','<span class="fc-in"><span class="fc-f" style="--tcol:'+TIPC[i]+'"><span class="fn">0'+(i+1)+'</span><b>'+t[0]+'</b><small>눌러서 보기</small></span><span class="fc-b" style="--tcol:'+TIPC[i]+'"><b>'+t[0]+'</b><span class="fd">'+t[1]+'</span><span class="fex">'+ex+'</span></span></span>');
+    c.setAttribute('aria-label',t[0]);
+    c.onclick=()=>{const on=c.classList.toggle('flip');if(on&&!c.dataset.seen){c.dataset.seen=1;n++;upd()}};
+    g.appendChild(c);
+  });
+  upd();
+  const all=$('#tip-all');all.textContent='모두 뒤집기';
+  all.onclick=()=>{const cs=$$('.fc',g);const anyClosed=cs.some(c=>!c.classList.contains('flip'));
+    cs.forEach((c,i)=>later(()=>{c.classList.toggle('flip',anyClosed);if(anyClosed&&!c.dataset.seen){c.dataset.seen=1;n++;upd()}},i*90));
+    all.textContent=anyClosed?'모두 덮기':'모두 뒤집기';if(!anyClosed)sl.classList.remove('fin');else if(shown)later(()=>sl.classList.add('fin'),1600)};
+};
+
+/* 10 퀴즈 */
+const QS=[
+  ['HWPX 스킬이 고쳐서 돌려주는 파일은?',['.hwp','.pdf','.hwpx','한글 파일이면 다 된다'],2,'.hwpx 전용이에요. .hwp는 한글에서 hwpx로 저장하거나 kordoc을 써요.'],
+  ['옛날 .hwp 양식밖에 없을 때 가장 쉬운 방법은?',['kordoc에 넣고 hwpx로 받는다','포기하고 손으로 쓴다','PDF로 바꿔서 넣는다','파일 이름 끝만 .hwpx로 고친다'],0,'kordoc은 .hwp를 읽고 서식 그대로 .hwpx로 바꿔서 채워 줘요. 이름만 고치면 파일이 열리지 않아요.'],
+  ['가장 좋은 요청 문장은?',['"/hwpx 실행"','"알아서 잘 써 줘"','"hwp로 저장해 줘"','양식 첨부 + 채울 내용 + "hwpx 파일로 만들어 줘"'],3,'스킬은 알아서 켜져요. 대신 양식, 내용, 받을 형식을 분명히 말해요.'],
+  ['받은 파일에서 선생님이 꼭 확인할 것은?',['글꼴 이름','날짜·요일과 내용','파일 크기','만든 시간'],1,'모양은 도구가 지켜 줘요. 내용이 맞는지는 사람이 확인해요.'],
+  ['ChatGPT에서 한글 스킬을 쓰려면?',['유료 요금제의 Work 모드에서','무료 계정 일반 채팅에서 바로','hwp 파일을 그냥 첨부하면 된다','크롬 확장을 깔면 된다'],0,'GPT의 스킬은 유료 요금제의 Work 모드에서 보여요. 무료에서는 안 돼요.'],
+  ['AI에 넣으면 안 되는 것은?',['상담 기간과 장소','빈 가정통신문 양식','학생 이름과 상담 내용','회신 기한'],2,'학생·학부모 개인정보는 받은 파일에 직접 입력해요.']
+];
+init.quiz=()=>{
+  const w=$('#quiz');let qi=0,ok=0;
+  function q(){
+    if(qi>=QS.length){w.innerHTML='<div class="qn">결과</div><div class="score glow">'+QS.length+'문제 중 '+ok+'문제</div><p class="lead">'+(ok>=4?'잘하셨어요. 이제 내 양식으로 직접 해 볼 차례입니다.':'해설을 떠올리며 한 번 더 풀어 보세요.')+'</p><div style="display:flex;gap:16px"><button class="btn line" id="qre">다시 풀기</button></div>';$('#qre').onclick=()=>{qi=0;ok=0;q()};return}
+    const x=QS[qi];
+    w.innerHTML='<div class="qn">'+(qi+1)+' / '+QS.length+'</div><div class="qt">'+x[0]+'</div><div class="opts"></div><div class="qexp"></div><div><button class="btn" id="qnext" hidden>'+(qi===QS.length-1?'결과 보기':'다음 문제')+'</button></div>';
+    x[1].forEach((o,i)=>{const b=el('button','','<span class="ol">'+'ABCD'[i]+'</span><span>'+o+'</span>');b.onclick=()=>{
+      $$('.opts button',w).forEach(z=>z.disabled=true);b.classList.add(i===x[2]?'r':'w');if(i!==x[2])$$('.opts button',w)[x[2]].classList.add('r');else ok++;
+      $('.qexp',w).textContent=x[3];$('#qnext').hidden=false};$('.opts',w).appendChild(b)});
+    $('#qnext').onclick=()=>{qi++;q()};
+  }
+  q();
+};
+
+/* 11 마무리 */
+const ENDS=[
+  ['가정통신문·안내문 채우기','HWPX 스킬 · kordoc · GPT','var(--sky)','첨부한 [양식 이름] 양식에 아래 내용을 채워 줘.\n- [칸 이름]: [넣을 내용]\n- [칸 이름]: [넣을 내용]\n표와 서식은 그대로 두고 hwpx 파일로 만들어 줘.'],
+  ['옛날 .hwp 양식 그대로','kordoc','var(--lav)','첨부한 [양식 이름].hwp를 서식 그대로 hwpx로 바꾼 뒤, 아래 내용을 채워 줘.\n- [칸 이름]: [넣을 내용]\nhwpx 파일로 만들어 줘.'],
+  ['명단으로 수료증·상장 여러 장','kordoc','var(--mint)','첨부한 [양식 이름] 양식에 [명단 파일].xlsx의 명단을 채워서 한 사람당 한 장씩 hwpx로 만들어 줘.\n먼저 세 장만 만들어서 보여 줘.'],
+  ['계획서 PDF로 결과 보고서','HWPX 스킬 · GPT 워크 모드','var(--peach)','첨부한 [계획서].pdf를 읽고 [보고서 양식] 양식의 칸을 채워 줘.\n모르는 내용은 지어내지 말고 비워 둬.\nhwpx 파일로 만들어 줘.'],
+  ['양식 없이 새 기안문','kordoc 틀','var(--pink)','기안문 틀로 hwpx 파일을 만들어 줘.\n제목: [제목]\n붙임: [붙임 문서 이름] 1부'],
+  ['받은 파일 다시 점검','어느 도구든','var(--surface2)','방금 만든 파일을 원본 양식과 비교해서 쪽수, 표 모양, 날짜와 요일이 맞는지 확인하고 틀린 곳만 알려 줘.']
+];
+const PARTS=[
+  {att:'[양식 이름] 양식',act:['아래 내용을 채워 줘.','- [칸 이름]: [넣을 내용]']},
+  {att:'[양식 이름].hwp',act:['.hwp 양식은 먼저 서식 그대로 hwpx로 바꿔 줘.']},
+  {att:'[명단 파일].xlsx',act:['명단을 채워서 한 사람당 한 장씩 만들고, 먼저 세 장만 보여 줘.']},
+  {att:'[계획서].pdf',act:['PDF를 읽고 양식의 칸을 채워 줘. 모르는 내용은 지어내지 말고 비워 둬.']},
+  {att:null,act:['기안문 틀로 새 문서도 만들어 줘. 제목: [제목], 붙임: [붙임 문서 이름] 1부']},
+  {att:null,act:['다 만들면 원본과 비교해서 쪽수, 표 모양, 날짜와 요일이 맞는지 확인하고 틀린 곳만 알려 줘.']}
+];
+const ORDER=[1,0,2,3,4,5];
+function compose(sel){
+  if(sel.length===1)return ENDS[sel[0]][3];
+  const has=k=>sel.includes(k);
+  const atts=[];ORDER.forEach(k=>{if(!has(k))return;const a=PARTS[k].att;if(!a)return;if(k===0&&has(1))return;atts.push(a)});
+  const lines=[];if(atts.length)lines.push('첨부 파일: '+atts.join(', '));
+  let n=1;const push=k=>PARTS[k].act.forEach((t,m)=>lines.push(m===0?(n++)+'. '+t:'   '+t));
+  ORDER.forEach(k=>{if(k!==5&&has(k))push(k)});
+  if(sel.some(k=>k<5))lines.push((n++)+'. 표와 서식은 그대로 두고 hwpx 파일로 만들어 줘.');
+  if(has(5))push(5);
+  return lines.join('\n');
+}
+init.end=()=>{
+  const w=$('#ends');w.innerHTML='';let sel=[0];$('#end-msg').textContent='';
+  const esc=t=>t.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+  function draw(){
+    $$('.endc',w).forEach((b,k)=>b.setAttribute('aria-pressed',sel.includes(k)?'true':'false'));
+    const txt=compose(sel);
+    if(sel.length===1){const x=ENDS[sel[0]];$('#end-title').textContent=x[0];$('#end-tool').textContent='추천 도구 · '+x[1];$('#end-dot').style.background=x[2];$('#end-dot').className='tdot'}
+    else{$('#end-title').textContent=sel.length+'개를 합친 요청';
+      const norm=t=>t.startsWith('kordoc')?'kordoc':t.startsWith('GPT')?'GPT':t.startsWith('HWPX')?'HWPX 스킬':null;const tools=['HWPX 스킬','kordoc','GPT'].filter(T=>sel.some(k=>ENDS[k][1].split(' · ').map(norm).includes(T)));$('#end-tool').textContent='추천 도구 · '+tools.join(' · ');
+      $('#end-dot').className='tdot mix';$('#end-dot').style.background='conic-gradient('+sel.map((k,i)=>ENDS[k][2]+' '+(i*100/sel.length)+'% '+((i+1)*100/sel.length)+'%').join(',')+')'}
+    const box=$('#end-text');box.classList.toggle('dense',txt.split('\n').length>6);
+    box.innerHTML=esc(txt).replace(/\[([^\]]+)\]/g,'<span class="phd">[$1]</span>').replace(/^(\d+)\. /gm,'<b class="sn2">$1</b>').replace(/\n/g,'<br>');
+    box.classList.remove('flash');void box.offsetWidth;box.classList.add('flash');$('#end-msg').textContent='';
+  }
+  ENDS.forEach((x,i)=>{const b=el('button','endc','<span class="ecol" style="background:'+x[2]+'"></span><span class="echk">✓</span><b>'+x[0]+'</b><small>'+x[1]+'</small>');
+    b.onclick=()=>{if(sel.includes(i)){if(sel.length>1)sel=sel.filter(k=>k!==i)}else{sel=[...sel,i].sort((a,b)=>a-b)}draw()};w.appendChild(b)});
+  draw();
+  $('#end-copy').onclick=e=>copyText(compose(sel),$('#end-text'),$('#end-msg'),e.currentTarget);
+};
+
+/* ---- 이동 ---- */
+const dots=$('#dots');
+slides.forEach((s,i)=>{
+  const g=+s.dataset.g;const d=el('button','dot'+(i>0&&+slides[i-1].dataset.g!==g?' gap':''),'<span class="tip">'+(i+1)+' '+s.dataset.title+'</span>');
+  d.style.setProperty('--gc',GC[g]);d.setAttribute('aria-label',(i+1)+'번 '+s.dataset.title);d.onclick=()=>go(i);dots.appendChild(d);
+});
+$('#tocp').innerHTML='<h3>목차</h3>'+slides.map((s,i)=>'<button data-i="'+i+'"><b>'+(i+1)+'</b>'+s.dataset.title+'</button>').join('');
+$$('#tocp button').forEach(b=>b.onclick=()=>{$('#toc').hidden=true;go(+b.dataset.i)});
+$('#tocbtn').onclick=()=>{$('#toc').hidden=false};
+$('#toc').onclick=e=>{if(e.target.id==='toc')$('#toc').hidden=true};
+function go(i,fromHash){
+  i=Math.max(0,Math.min(slides.length-1,i));clearT();$('#toast').classList.remove('on');closeNotice();closePop();
+  slides.forEach((s,k)=>s.classList.toggle('active',k===i));cur=i;
+  $$('.dot').forEach((d,k)=>{d.classList.toggle('on',k===i);d.classList.toggle('past',k<i)});
+  $('#prev').style.visibility=i===0?'hidden':'visible';$('#next').style.visibility=i===slides.length-1?'hidden':'visible';
+  const fn=init[slides[i].dataset.k];fn&&fn();
+  const pad=n=>String(n).padStart(2,'0');$('#ch-n').textContent=pad(i+1)+' / '+pad(slides.length);$('#ch-t').textContent=pad(i+1)+' — '+slides[i].dataset.title;$('#ch-r').style.width=((i+1)/slides.length*100)+'%';stage.classList.toggle('inv',slides[i].dataset.k==='cover');
+  if(!fromHash){try{history.replaceState(null,'','#'+(i+1))}catch(e){}}
+}
+$('#prev').onclick=()=>go(cur-1);$('#next').onclick=()=>go(cur+1);
+$('#nt-ok').onclick=closeNotice;$('#pop').onclick=e=>{if(e.target.id==='pop')closePop()};$('#notice').onclick=e=>{if(e.target.id==='notice')closeNotice()};
+addEventListener('keydown',e=>{
+  if(!$('#pop').hidden){if(e.key==='Escape')closePop();e.preventDefault();return}
+  if(!$('#notice').hidden){if(e.key==='Escape'||e.key==='Enter')closeNotice();e.preventDefault();return}
+  if(!$('#toc').hidden){if(e.key==='Escape')$('#toc').hidden=true;return}
+  if(e.key==='ArrowRight'||e.key==='PageDown')go(cur+1);
+  if(e.key==='ArrowLeft'||e.key==='PageUp')go(cur-1);
+});
+const fromH=()=>{const n=parseInt(location.hash.slice(1),10);return isNaN(n)?0:n-1};
+addEventListener('hashchange',()=>{const n=fromH();if(n!==cur)go(n,true)});
+go(fromH(),true);
+})();
+</script>
+
+</body></html>
